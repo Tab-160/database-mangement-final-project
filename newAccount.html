@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="hash.js"></script>
+    <script src="index2.js"></script>
+  </head>
+  <body>
+    <fieldset >
+      <legend>Create an Account</legend>
+      <input type='hidden' name='submitted' id='submitted' value='1'/>
+      <label for='username' required>Username:</label>
+      <input type='text' name='username' id="createAccount_input_username"  maxlength="50" />
+      <p></p>
+      <label for='password' required>Password:</label>
+      <input type='password' name='password' id="createAccount_input_password" maxlength="50" />
+      <p></p>
+      <label for='confirmPassword' required>Confirm Password:</label>
+      <input type='password' name='password' id="createAccount_input_confirmPassword" maxlength="50" />
+      <p></p>
+      <button onclick="createAccount()">Create Account</button>
+    </fieldset>
+    <p id="error"></p>
+    <p><a href="index.html">Cancel</a></p>
+  </body>
+</html>
