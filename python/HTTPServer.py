@@ -3,7 +3,7 @@
 import socket
 import threading
 import runSQL
-import WebSocket
+import fileIO
 
 def runHTTPServer():
     """Starts and continues operation of HTTP server"""
@@ -48,70 +48,39 @@ def runHTTPServer():
                     
                         continue # Skip to next data sent by client
                     
-                    # If the request is not a get request
-                    if(data[0:3] != "GET"):
+                    # If the request is a get request
+                    if(data[0:data.find(" ")] == "GET"):
+                        file_loc = data[4:version_index-1]  # Grab the file location
+
+                        if(file_loc == "/"):    # If /, then index is wanted
+                            file_loc += "index.html"
+
+                        # All files are in the assets folder
+                        file_loc = "C:\\Users\\rgreenup24\\Desktop\\finalProjectDatabase\\assets" + file_loc
+
+                        # If there is an illegal char, ignore everything after
+                        if(file_loc.find("?") > 0):
+                            file_loc = file_loc[0:file_loc.find("?")]
+
+                        #Send file
+                        fileIO.sendFile(conn, file_loc)
+
+                        continue    # Skip to next data sent by client
+
+                    # If there is a post request, then it is search or sign-in
+                    elif(data[0:data.find(" ")] == "POST"):
+                        data = data[data.find("\r\n\r\n")+4:]
+                        print(data)
+                        print(runSQL.runSQL(data))
+
+                
+                    else:   # Not a GET or POST request, therefor not supported
                         #Build the error message
                         msg = "HTTP/1.1 501 Not Implemented\r\n"
                         msg += "Content-Length: 63\r\n\r\n" # Final header
-                        msg += "As of 2021-11-29, server does not yet support non-GET requests."
+                        msg += "As of 2021-12-09, server does not yet support non-GET or POST requests."
 
                         conn.sendall(msg.encode('utf-8'))   # Send error to client
-                    
-                        continue    # Skip to next data sent by client
-                    
-
-                
-                    file_loc = data[4:version_index-1]  # Grab the file location
-
-                    if(file_loc == "/"):    # If /, then index is wanted
-                        file_loc += "index.html"
-
-                    file_loc = "C:\\Users\\rgreenup24\\Desktop\\finalProjectDatabase\\assets" + file_loc  # All files are in the assets folder
-
-                    # If there is an illegal char, ignore everything after
-                    if(file_loc.find("?") > 0):
-                        file_loc = file_loc[0:file_loc.find("?")]
-
-                    #Send file
-                    sendFile(conn, file_loc)
-
-        
-def sendFile(conn, file_loc):
-    """ Sends file over TCP connection using HTTP/1.1
-
-    Args:
-        conn: An accepted TCP connection
-        file_loc: string with the location of the file to be sent
-    """   
-    file_contents = -1
-
-    try:
-        with open(file_loc, 'rb') as f:  # Opens and reads file
-            file_contents = f.read()
-    except: # If file cannot be opened, then assume that it cannot be found
-        conn.sendall("HTTP/1.1 404 File Not Found\r\n".encode('utf-8'))
-        print ("404")
-        return
-
-    status_code = "HTTP/1.1 200 OK\r\n"   # Proper HTTP status code
-
-    headers = "Connection: keep-alive\r\n"
-    headers += "Content-Length: " + str(len(file_contents)) + "\r\n\r\n"
-    # This is the last header, so a blank line is added
-
-    # message to be sent
-    msg = status_code.encode('utf-8')
-    msg += headers.encode('utf-8')
-    msg += file_contents
-
-    print("Sending", file_loc)
-    conn.sendall(msg)   # Send message
-    print("Sent!\n\n")
-
 
 if __name__ == '__main__':
-    #HTTPServer = threading.Thread(target=runHTTPServer)
-    #SocketServer = threading.Thread(target=runSocketServer)
-    #HTTPServer.start()
-    #SocketServer.start()
     runHTTPServer()
