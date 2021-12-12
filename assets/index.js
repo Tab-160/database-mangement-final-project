@@ -37,7 +37,12 @@ function search(){
     xmlHttp.open( "POST", '127.0.0.1:50001/search_results', false ); // false for synchronous request
     xmlHttp.send( sql );
     
-    window.location.href = 'search_results.html'
+    setTimeout(gotosearch, 300);
+}
+
+// Redirects page to search_results.html
+gotosearch(){
+    window.location.href = 'search_results.html';
 }
 
 // Tells the server the username and password
