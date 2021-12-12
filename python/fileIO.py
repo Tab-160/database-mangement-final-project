@@ -9,7 +9,7 @@ import socket
 
 # Location of this project
 # Example: "C:\\Users\\rgreenup24\\Desktop\\finalProjectDatabase\\"
-global PROJECT_LOCATION = "D:\\finalProjectDatabase\\"
+PROJECT_LOCATION = "D:\\database-mangement-final-project\\"
 
 
 

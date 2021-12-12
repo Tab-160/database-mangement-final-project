@@ -35,13 +35,12 @@ function search(){
 	// Finish SQL
 	sql += " LIKE '%" + search_term + "%'"
 	
-	
-
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "POST", '127.0.0.1:50001/search_results' ); // false for synchronous request
+    xmlHttp.open( "POST", '127.0.0.1:50001/search_results', false ); // false for synchronous request
     xmlHttp.send( sql );
+    
+    window.location.href = 'search_results.html'
 
-	window.location.href = 'search_results.html';
 }
 
 // WebSocket approach

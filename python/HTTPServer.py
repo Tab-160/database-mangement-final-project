@@ -76,15 +76,15 @@ def runHTTPServer():
 
                         # Build and send response, assuming search
                         msg = b"HTTP/1.1 303 See Other\r\n"
-                        #msg += b"Content-Length: 205\r\n"
+                        msg += b"Content-Length: 205\r\n"
                         msg += b"Connection: keep-alive\r\n"
                         msg += b"Location: search_results.html\r\n\r\n"
 
-                        # Open
-                        #with open("C:\\Users\\rgreenup24\\Desktop\\finalProjectDatabase\\assets\\redirect.html", 'rb') as f:  # Opens and reads file
-                        #    file_contents = f.read()
+                        # Open response
+                        with open(fileIO.PROJECT_LOCATION + "assets\\redirect.html", 'rb') as f:  # Opens and reads file
+                            file_contents = f.read()
 
-                        #msg += file_contents
+                        msg += file_contents
 
                         conn.sendall(msg)
                

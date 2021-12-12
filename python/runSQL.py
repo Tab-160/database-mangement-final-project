@@ -3,6 +3,7 @@
 
 
 import pyodbc
+import fileIO
 
 
 def runSQL(query):
@@ -14,7 +15,7 @@ def runSQL(query):
     Returns:
         A list of tuples
     """
-    conn_str = r'DRIVER={Driver do Microsoft Access (*.mdb)};UID=admin;UserCommitSync=Yes;Threads=3;SafeTransactions=0;PageTimeout=5;MaxScanRows=8;MaxBufferSize=2048;FIL=MS Access;DriverId=25;DefaultDir=C:\USERS\RGREENUP24\DESKTOP\FINALPROJECTDATABASE\ASSETS;DBQ=C:\USERS\RGREENUP24\DESKTOP\FINALPROJECTDATABASE\ASSETS\finalProject.mdb;'
+    conn_str = r'DRIVER={Driver do Microsoft Access (*.mdb)};UID=admin;UserCommitSync=Yes;Threads=3;SafeTransactions=0;PageTimeout=5;MaxScanRows=8;MaxBufferSize=2048;FIL=MS Access;DriverId=25;DefaultDir=ASSETS;DBQ=' + fileIO.PROJECT_LOCATION + r'ASSETS\finalProject.mdb;'
     conn = pyodbc.connect(conn_str)
     crsr = conn.cursor()
 
