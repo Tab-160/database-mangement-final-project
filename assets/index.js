@@ -8,8 +8,6 @@ User clicks "Search" on search.html
 5. SocketServer sends Done to Client
 6. Client gets redirected to /assets/search-results.html through HTTPServer
 7. HTTPServer sends search-results.html over to Client
-8. Client sends Done to SocketServer
-9. SocketServer deletes search-results.html
 
 This file will be implementing the Client side of this interaction
 */
