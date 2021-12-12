@@ -4,6 +4,7 @@
  * @version 1.0.1
  * @author Greenup, Rab [tab160.com@gmail.com]
  * @copyright Greenup, Rab 2019
+ * Curretly not in use, only here to be ported to Python
  */
 
 var username;

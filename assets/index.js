@@ -45,6 +45,7 @@ function search(){
 }
 
 // WebSocket approach
+// Deprecated, no longer in use
 function searchWebSocket(){    
     // Set up websocket to communicate with SocketServer
     // TODO: get search_SQL set up properly
