@@ -41,6 +41,11 @@ function search(){
 
 }
 
+// Tells the server the username and password
+function signIn(){
+    
+}
+
 // WebSocket approach
 // Deprecated, no longer in use
 function searchWebSocket(){    

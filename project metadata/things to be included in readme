@@ -1,0 +1,9 @@
+fileIO:
+    PROJECT_LOCATION
+
+runSQL:
+    further detail about conn_str
+        only works wwith .mdb
+        
+        
+Uses "" for strings, '' for binaries

@@ -1,33 +1,41 @@
-# File IO stuff
-# has:
-# getFileLoc()
-# sendFile()
-# buildHTML()
+"""File IO stuff. 
 
+    Handles all file input/output operations that are not SQL-query related
+    Methods:
+        getFileLoc(request)
+        sendFile(conn, file_loc)
+        createFile(sql_response, file_loc)
+
+"""
+
+# Used to send file
 import socket
 
+import HTTPServer
 
 # Location of this project
 # Example: "C:\\Users\\rgreenup24\\Desktop\\finalProjectDatabase\\"
 PROJECT_LOCATION = "D:\\database-mangement-final-project\\"
 
 
-
-def getFileLoc(request, domain):
+def getFileLoc(request):
     """ Finds the file location from an HTTP request
+        Uses the domain specified in HTTPServer
 
     Args:
         request: An HTTP GET request
-        domain: The subdomain, second-level domain, and top
     """
-
+    # Find the end of the first line, ending point of file location
     version_index = request.find("HTTP")
 
-    file_loc = request[4:version_index-1]  # Grab the file location
+    # Because this is a GET request
+    # We know the file location begins at index 4
+    # Goes until the space before "HTTP"
+    file_loc = request[4:version_index-1]
 
     # If the server included the domain, ignore it
-    while(file_loc.find(domain) > 0):
-        file_loc = file_loc[len(domain)+1:]
+    while(file_loc.find(HTTPServer.DOMAIN) > 0):
+        file_loc = file_loc[len(HTTPServer.DOMAIN)+1:]
     
     if(file_loc == "/"):    # If /, then index is wanted
         file_loc += "index.html"
@@ -46,30 +54,29 @@ def sendFile(conn, file_loc):
         conn: An accepted TCP connection
         file_loc: string with the location of the file to be sent
     """   
-    file_contents = -1
+    file_contents = b''
 
+    # Read in file
     try:
-        with open(file_loc, 'rb') as f:  # Opens and reads file
+        with open(file_loc, 'rb') as f: 
             file_contents = f.read()
     except: # If file cannot be opened, then assume that it cannot be found
-        conn.sendall("HTTP/1.1 404 File Not Found\r\n\r\n".encode('utf-8'))
-        print ("fileIO404")
+        conn.sendall(b'HTTP/1.1 404 File Not Found\r\n\r\n')
         return
 
-    status_code = "HTTP/1.1 200 OK\r\n"   # Proper HTTP status code
+    status_code = b'HTTP/1.1 200 OK\r\n'   # Proper HTTP status code
 
-    headers = "Connection: keep-alive\r\n"
-    headers += "Content-Length: " + str(len(file_contents)) + "\r\n\r\n"
+    # Set up headers as binary
+    headers = b'Connection: keep-alive\r\n'
+    headers += b'Content-Length: ' + bin(len(file_contents)) + b'\r\n\r\n'
     # This is the last header, so a blank line is added
 
     # message to be sent
-    msg = status_code.encode('utf-8')
-    msg += headers.encode('utf-8')
+    msg = status_code
+    msg += headers
     msg += file_contents
 
-    print("Sending", file_loc)
     conn.sendall(msg)   # Send message
-    print("Sent!\n\n")
 
 def createFile(sql_response, file_loc):
     """ Creates a HTML file at file_loc that
@@ -104,12 +111,10 @@ def createFile(sql_response, file_loc):
         for i in sql_response:
             # Opening tag for row
             row = "      <tr>\n"
-            
             # Loop through each of the elements in the tuple
             for j in i:
                 # Add the data as a td element
                 row += "        <td>" + str(j) + "</td>\n"
-
             # Reached end of row, close row
             row += "      </tr>\n"
             # Write this row into file

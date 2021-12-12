@@ -1,0 +1,13 @@
+
+
+Sign-in system using put request
+
+
+Seperate out all conn stuff
+Seperate out HTTP response headers
+
+readme.txt
+
+
+Generalize what database to use in runSQL.py
+
