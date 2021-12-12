@@ -54,10 +54,10 @@ def runHTTPServer():
                     # If the request is a get request, send the associated file
                     if data[0:data.find(b' ')] == b'GET':
                         # Get the location of the file
-                        file_loc = fileIO.getFileLoc(data)
+                        file_loc = fileIO.getFileLoc(data).decode('utf-8')
                         # All files are in the assets folder
-                        file_loc = fileIO.PROJECT_LOCATION + "assets\\" + file_loc
-                        
+                        file_loc = fileIO.PROJECT_LOCATION + "assets" + file_loc
+
                         #Send file
                         fileIO.sendFile(conn, file_loc)
 
@@ -68,7 +68,7 @@ def runHTTPServer():
                         # Find the body of the data
                         data = data[data.find(b'\r\n\r\n')+4:]
                         # Run SQL
-                        sql_result = runSQL.runSQL(data)
+                        sql_result = runSQL.runSQL(data.decode('utf-8'))
                         # Create search_result.html
                         fileIO.createFile(sql_result, fileIO.PROJECT_LOCATION + "assets\\search_results.html")
 
@@ -84,21 +84,21 @@ def runHTTPServer():
                
                     else:   # Not a GET or POST request, therefor not supported
                         #Build the error message
-                        msg = "HTTP/1.1 501 Not Implemented\r\n"
-                        msg += "Content-Length: 63\r\n\r\n" # Final header
-                        msg += "As of 2021-12-09, server does not yet support non-GET or POST requests."
+                        msg = b'HTTP/1.1 501 Not Implemented\r\n'
+                        msg += b'Content-Length: 63\r\n\r\n' # Final header
+                        msg += b'As of 2021-12-09, server does not yet support non-GET or POST requests.'
 
-                        conn.sendall(msg.encode('utf-8'))   # Send error
+                        conn.sendall(msg)   # Send error
 
 if __name__ == '__main__':
     # Start the server, and every 5 seconds restart it
-    #while(True):
-    #    server = multiprocessing.Process(target=runHTTPServer)
-    #    server.start()
-    #    print("Starting server!")
-    #    time.sleep(5)
-    #    print("Closing Server!")
-    #    server.terminate()
+    """while(True):
+        server = multiprocessing.Process(target=runHTTPServer)
+        server.start()
+        print("Starting server!")
+        time.sleep(15)
+        print("Closing Server!")
+        server.terminate()"""
     runHTTPServer()
 
 

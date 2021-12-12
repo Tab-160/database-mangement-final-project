@@ -26,7 +26,7 @@ def getFileLoc(request):
         request: An HTTP GET request
     """
     # Find the end of the first line, ending point of file location
-    version_index = request.find("HTTP")
+    version_index = request.find(b'HTTP')
 
     # Because this is a GET request
     # We know the file location begins at index 4
@@ -34,15 +34,15 @@ def getFileLoc(request):
     file_loc = request[4:version_index-1]
 
     # If the server included the domain, ignore it
-    while(file_loc.find(HTTPServer.DOMAIN) > 0):
+    while(file_loc.find(HTTPServer.DOMAIN.encode('utf-8')) > 0):
         file_loc = file_loc[len(HTTPServer.DOMAIN)+1:]
     
-    if(file_loc == "/"):    # If /, then index is wanted
+    if(file_loc == b'/'):    # If /, then index is wanted
         file_loc += "index.html"
     
     # If there is an illegal char, ignore everything after
-    if(file_loc.find("?") > 0):
-        file_loc = file_loc[0:file_loc.find("?")]
+    if(file_loc.find(b'?') > 0):
+        file_loc = file_loc[0:file_loc.find(b'?')]
 
     return(file_loc)
     
@@ -56,6 +56,8 @@ def sendFile(conn, file_loc):
     """   
     file_contents = b''
 
+    print(file_loc)
+
     # Read in file
     try:
         with open(file_loc, 'rb') as f: 
@@ -68,8 +70,8 @@ def sendFile(conn, file_loc):
 
     # Set up headers as binary
     headers = b'Connection: keep-alive\r\n'
-    headers += b'Content-Length: ' + bin(len(file_contents)) + b'\r\n\r\n'
-    # This is the last header, so a blank line is added
+    headers += b'Content-Length: ' + str(len(file_contents)).encode('utf-8')
+    headers += b'\r\n\r\n'  # This is the last header, so a blank line is added
 
     # message to be sent
     msg = status_code
