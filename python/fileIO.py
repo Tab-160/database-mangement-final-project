@@ -1,12 +1,43 @@
 # File IO stuff
 # has:
+# getFileLoc()
 # sendFile()
 # buildHTML()
 
 import socket
 
-# For testing:
-import runSQL
+
+# Location of this project
+# Example: "C:\\Users\\rgreenup24\\Desktop\\finalProjectDatabase\\"
+global PROJECT_LOCATION = "D:\\finalProjectDatabase\\"
+
+
+
+def getFileLoc(request, domain):
+    """ Finds the file location from an HTTP request
+
+    Args:
+        request: An HTTP GET request
+        domain: The subdomain, second-level domain, and top
+    """
+
+    version_index = request.find("HTTP")
+
+    file_loc = request[4:version_index-1]  # Grab the file location
+
+    # If the server included the domain, ignore it
+    while(file_loc.find(domain) > 0):
+        file_loc = file_loc[len(domain)+1:]
+    
+    if(file_loc == "/"):    # If /, then index is wanted
+        file_loc += "index.html"
+    
+    # If there is an illegal char, ignore everything after
+    if(file_loc.find("?") > 0):
+        file_loc = file_loc[0:file_loc.find("?")]
+
+    return(file_loc)
+    
  
 def sendFile(conn, file_loc):
     """ Sends file over TCP connection using HTTP/1.1
@@ -21,7 +52,7 @@ def sendFile(conn, file_loc):
         with open(file_loc, 'rb') as f:  # Opens and reads file
             file_contents = f.read()
     except: # If file cannot be opened, then assume that it cannot be found
-        conn.sendall("HTTP/1.1 404 File Not Found\r\n".encode('utf-8'))
+        conn.sendall("HTTP/1.1 404 File Not Found\r\n\r\n".encode('utf-8'))
         print ("fileIO404")
         return
 
@@ -54,14 +85,18 @@ def createFile(sql_response, file_loc):
         # Writes the top of the file
         head = """<!DOCTYPE html>
 <html>
-  <head>
-  </head>
+  <head></head>
   <body>
     <a href="index.html">Home</a>
     <a href=sign-in.html>Sign-In</a>
     <a href="search.html">Search for a product</a>
-    <p>Search Results</p>
+    <h2>Search Results</h2>
     <table>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Unit Volume</th>
+        </tr>
 """
         f.write(head)
 
@@ -87,7 +122,3 @@ def createFile(sql_response, file_loc):
         f.write(foot)
 
         #done
-
-
-if __name__ == '__main__':
-    createFile(runSQL.runSQL("SELECT * FROM products"), "C:\\Users\\rgreenup24\\Desktop\\finalProjectDatabase\\assets\\file.html")

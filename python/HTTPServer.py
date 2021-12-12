@@ -1,7 +1,8 @@
 # Basic socket programming example of server application
 
 import socket
-import threading
+import multiprocessing
+import time
 import runSQL
 import fileIO
 
@@ -17,11 +18,14 @@ def runHTTPServer():
             s.bind((HOST, PORT))    # Binds HOST ip to PORT socket
             s.listen()  # Prepares server to hear a connection
 
+            s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+
             # Blocks and waits for an incoming request.
             # When connection is made, store in conn
             conn, addr = s.accept()
 
             with conn:
+                print(addr)
                 while(True):
                     print("waiting for data...")
                     # Recives and prints data from client
@@ -50,18 +54,14 @@ def runHTTPServer():
                     
                     # If the request is a get request
                     if(data[0:data.find(" ")] == "GET"):
-                        file_loc = data[4:version_index-1]  # Grab the file location
-
-                        if(file_loc == "/"):    # If /, then index is wanted
-                            file_loc += "index.html"
-
+                        domain = HOST + ":" + str(PORT)
+                        # Get the location of the file
+                        file_loc = fileIO.getFileLoc(data, domain)
+                        
                         # All files are in the assets folder
-                        file_loc = "C:\\Users\\rgreenup24\\Desktop\\finalProjectDatabase\\assets" + file_loc
+                        file_loc = fileIO.PROJECT_LOCATION + "assets\\" + file_loc
 
-                        # If there is an illegal char, ignore everything after
-                        if(file_loc.find("?") > 0):
-                            file_loc = file_loc[0:file_loc.find("?")]
-
+                        
                         #Send file
                         fileIO.sendFile(conn, file_loc)
 
@@ -69,11 +69,25 @@ def runHTTPServer():
 
                     # If there is a post request, then it is search or sign-in
                     elif(data[0:data.find(" ")] == "POST"):
+                        # Find the body of the data
                         data = data[data.find("\r\n\r\n")+4:]
-                        print(data)
-                        print(runSQL.runSQL(data))
+                        # Currently, only search implemented. So, run search
+                        fileIO.createFile(runSQL.runSQL(data), fileIO.PROJECT_LOCATION + "assets\\search_results.html")
 
-                
+                        # Build and send response, assuming search
+                        msg = b"HTTP/1.1 303 See Other\r\n"
+                        #msg += b"Content-Length: 205\r\n"
+                        msg += b"Connection: keep-alive\r\n"
+                        msg += b"Location: search_results.html\r\n\r\n"
+
+                        # Open
+                        #with open("C:\\Users\\rgreenup24\\Desktop\\finalProjectDatabase\\assets\\redirect.html", 'rb') as f:  # Opens and reads file
+                        #    file_contents = f.read()
+
+                        #msg += file_contents
+
+                        conn.sendall(msg)
+               
                     else:   # Not a GET or POST request, therefor not supported
                         #Build the error message
                         msg = "HTTP/1.1 501 Not Implemented\r\n"
@@ -83,4 +97,19 @@ def runHTTPServer():
                         conn.sendall(msg.encode('utf-8'))   # Send error to client
 
 if __name__ == '__main__':
+    #while(True):
+    #    server = multiprocessing.Process(target=runHTTPServer)
+    #    server.start()
+    #    print("Starting server!")
+    #    time.sleep(5)
+    #    print("Closing Server!")
+    #    server.terminate()
     runHTTPServer()
+
+
+
+
+
+
+
+        

@@ -23,7 +23,7 @@ function search(){
     var search_type = document.getElementsByName('type');
 
 	// Sets up SQL request
-	var sql = "SELECT name, retail_price, category, unit_vol FROM product WHERE ";
+	var sql = "SELECT name, category, unit_vol FROM products WHERE ";
 	
 	// If the second button is selected, then search over category
 	if(search_type[1].checked){
@@ -38,9 +38,10 @@ function search(){
 	
 
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "POST", '127.0.0.1:50001', false ); // false for synchronous request
+    xmlHttp.open( "POST", '127.0.0.1:50001/search_results' ); // false for synchronous request
     xmlHttp.send( sql );
 
+	window.location.href = 'search_results.html';
 }
 
 // WebSocket approach
