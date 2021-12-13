@@ -2,9 +2,10 @@
 
 Sign-in system using put request
 
+Seperate out HTTP response headers
+    Add more headers
 
 Seperate out all conn stuff
-Seperate out HTTP response headers
 
 readme.txt
 
