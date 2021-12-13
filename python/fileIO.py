@@ -94,7 +94,9 @@ def createFile(sql_response, file_loc):
         # Writes the top of the file
         head = """<!DOCTYPE html>
 <html>
-  <head></head>
+  <head>
+    <meta charset="utf-8"/>
+  </head>
   <body>
     <a href="index.html">Home</a>
     <a href=sign-in.html>Sign-In</a>
