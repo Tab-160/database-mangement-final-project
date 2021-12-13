@@ -13,6 +13,8 @@ This file will be implementing the Client side of this interaction
 */
 
 function search(){
+    
+    console.log("inside search");
 	
 	// Get what the user wants to search for
     var search_term = document.getElementById('search_input_search').value;
@@ -34,19 +36,22 @@ function search(){
 	sql += " LIKE '%" + search_term + "%'"
 	
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "POST", '127.0.0.1:50001/search_results', false ); // false for synchronous request
+    xmlHttp.open( "POST", '127.0.0.1:50001/search_results' ); // false for synchronous request
     
-    xmlHttp.onreadystatechange=function() {
-        if (xmlHttp.readyState==4 && xmlhttp.status==200) {
+    console.log(xmlHttp.readyState);
+    
+    while(true){
+        if (xmlHttp.readyState==1) {
     // do stuff here
             xmlHttp.send( sql );
+            break;
         }
     }
     
     
     
     
-    setTimeout(gotosearch, 1000);
+    setTimeout(gotosearch, 6000);
 }
 
 // Redirects page to search_results.html
