@@ -35,7 +35,16 @@ function search(){
 	
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "POST", '127.0.0.1:50001/search_results', false ); // false for synchronous request
-    xmlHttp.send( sql );
+    
+    xmlHttp.onreadystatechange=function() {
+        if (xmlHttp.readyState==4 && xmlhttp.status==200) {
+    // do stuff here
+            xmlHttp.send( sql );
+        }
+    }
+    
+    
+    
     
     setTimeout(gotosearch, 1000);
 }
