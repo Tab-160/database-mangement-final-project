@@ -41,7 +41,7 @@ function search(){
 }
 
 // Redirects page to search_results.html
-gotosearch(){
+function gotosearch(){
     window.location.href = 'search_results.html';
 }
 
@@ -50,6 +50,8 @@ function signIn(){
     
 }
 
+
+/*
 // WebSocket approach
 // Deprecated, no longer in use
 function searchWebSocket(){    
@@ -95,3 +97,4 @@ function searchWebSocket(){
     
     webSocket.close();
 }
+*/
