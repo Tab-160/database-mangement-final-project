@@ -37,7 +37,7 @@ function search(){
     xmlHttp.open( "POST", '127.0.0.1:50001/search_results', false ); // false for synchronous request
     xmlHttp.send( sql );
     
-    setTimeout(gotosearch, 300);
+    setTimeout(gotosearch, 1000);
 }
 
 // Redirects page to search_results.html
