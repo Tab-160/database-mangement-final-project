@@ -2,6 +2,9 @@
 
 Sign-in system using put request
 
+Create account
+    Random salts/userID
+
 Seperate out HTTP response headers
     Add more headers
 

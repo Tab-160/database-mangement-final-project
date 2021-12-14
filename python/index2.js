@@ -30,7 +30,7 @@ function signIn2() {
 
 	  	window.location.href = 'page.html';
   	} else {
-	  	window.alert('Incorrect Username or Password');
+        window.alert('Incorrect Username or Password');
       window.alert(username);
       window.alert(password);
       window.alert(usernameTrue);
