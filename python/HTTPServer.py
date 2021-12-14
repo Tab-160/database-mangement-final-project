@@ -79,7 +79,10 @@ def runHTTPServer():
 
                         conn.sendall(msg)
 
-                    #elif data[0:data.find(b' ')] == b'PUT':
+                    # Sign in user
+                    elif data[0:data.find(b' ')] == b'SIGNIN':
+
+                        print("Nice it worked")
                         # Sign user in here
                
                     else:   # Not a GET or POST request, therefor not supported

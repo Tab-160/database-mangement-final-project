@@ -38,7 +38,11 @@ function search(){
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "POST", '127.0.0.1:50001/search_results' ); // false for synchronous request
     
-    console.log(xmlHttp.readyState);
+    // For each character, remove any semicolens
+    // Repeats a number of times of characters in string, works for string of only semicolens
+    for(let i = 0; i < sql.length; i++){
+        sql.replace(';', '');
+    }
     
     while(true){
         if (xmlHttp.readyState==1) {
@@ -47,8 +51,6 @@ function search(){
             break;
         }
     }
-    
-    
     
     
     setTimeout(gotosearch, 6000);
@@ -61,31 +63,20 @@ function gotosearch(){
 
 // Tells the server the username and password
 function signIn(){
-    console.log("inside search");
+    console.log("inside signIn");
 	
 	// Get what the user wants to search for
     var username = document.getElementById('logon_input_username').value;
 	
 	// Find radio button value
-    var password = document.getElementsByName('logon_input_password');
-
-	// Sets up SQL request
-	var sql = "SELECT name, category, unit_vol FROM products WHERE ";
-	
-	// If the second button is selected, then search over category
-	if(search_type[1].checked){
-		sql += "category";
-	} else {	// Otherwise, search over name
-		sql += "name";
-	}
-	
-	// Finish SQL
-	sql += " LIKE '%" + search_term + "%'"
+    var password = document.getElementById('logon_input_password').value;
+    
+    var content = username + "|" + password;
     
     // For each character, remove any semicolens
     // Repeats a number of times of characters in string, works for string of only semicolens
-    for(let i = 0; i < sql.length; i++){
-        sql.replace(';', '');
+    for(let i = 0; i < content.length; i++){
+        content.replace(';', '');
     }
 	
     var xmlHttp = new XMLHttpRequest();
@@ -96,7 +87,7 @@ function signIn(){
     while(true){
         if (xmlHttp.readyState==1) {
     // do stuff here
-            xmlHttp.send( sql );
+            xmlHttp.send( content );
             break;
         }
     }

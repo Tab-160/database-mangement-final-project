@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8"/>
-    <script src="index2.js"></script>
+    <script src="index.js"></script>
   </head>
   <body>
     <fieldset >
@@ -14,8 +14,13 @@
       <label for='password' required>Password:</label>
       <input type='password' name='password' id="logon_input_password" maxlength="50" />
       <p></p>
-      <button onclick="signIn2()">Log In</button>
+      <button id="excecuteSignIn">Log In</button>
     </fieldset>
     <p><a href="newAccount.html">Create an account</a></p>
+      
+      
+      
+      
+    <script>document.getElementById("excecuteSignIn").addEventListener('click', signIn);</script>
   </body>
 </html>
