@@ -68,7 +68,7 @@ def runHTTPServer():
                         # Run SQL
                         sql_result = runSQL.runSQL(data.decode('utf-8'))
                         # Create search_result.html
-                        fileIO.createFile(sql_result, fileIO.PROJECT_LOCATION + "assets\\search_results.html")
+                        fileIO.createSearchFile(sql_result, fileIO.PROJECT_LOCATION + "assets\\search_results.html")
 
                         # Build and send response
                         conn.sendall(HTTPResponse.postResponse())
@@ -76,7 +76,7 @@ def runHTTPServer():
                     # Sign in user
                     elif requestType == b'SIGNIN':
 
-                        
+                                                
 
                         print("Nice it worked")
                         # Sign user in here

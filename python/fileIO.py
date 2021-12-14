@@ -46,7 +46,7 @@ def getFileLoc(request):
     return(file_loc)
     
 
-def createFile(sql_response, file_loc):
+def createSearchFile(sql_response, file_loc):
     """ Creates a HTML file at file_loc that
         displays the data in sql_response nicely
 
@@ -65,8 +65,8 @@ def createFile(sql_response, file_loc):
   </head>
   <body>
     <a href="index.html">Home</a>
-    <a href=sign-in.html>Sign-In</a>
     <a href="search.html">Search for a product</a>
+    <a href=sign-in.html align=right id='user'>Sign-In</a>
     <h2>Search Results</h2>
     <table>
         <tr>
@@ -97,3 +97,34 @@ def createFile(sql_response, file_loc):
         f.write(foot)
 
         #done
+
+def createUserFile(userID, file_loc):
+    """ Creates a HTML file at file_loc that
+        displays user info
+
+    Args:
+        sql_response: A list of tuples with the data from a pyodbc execution
+        file_loc: Location for the file to be created
+            If it already exists, file will be overwritten
+    """
+    
+    with open(file_loc, 'w') as f:  # creates file
+        # Writes the top of the file
+        head = """<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+  </head>
+  <body>
+    <a href="index.html">Home</a>
+    <a href="search.html">Search for a product</a>
+    <a href=sign-in.html align=right>Sign-In</a>
+    <h2>Search Results</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Unit Volume</th>
+        </tr>
+"""
+        f.write(head)
