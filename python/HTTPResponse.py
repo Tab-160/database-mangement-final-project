@@ -34,7 +34,7 @@ def sendFile(file_loc):
         with open(file_loc, 'rb') as f: 
             file_contents = f.read()
     except: # If file cannot be opened, then assume that it cannot be found
-        return b'HTTP/1.1 404 File Not Found\r\n\r\n')
+        return b'HTTP/1.1 404 File Not Found\r\n\r\n'
 
     status_code = b'HTTP/1.1 200 OK\r\n'   # Proper HTTP status code
 
