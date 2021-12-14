@@ -50,9 +50,10 @@ def sendFile(file_loc):
 
     return msg
 
-def postReponse():
+def postResponse(file_loc):
+    """ File_loc is the file that was created as binary string"""
     msg = b"HTTP/1.1 303 See Other\r\n"
     msg += b"Connection: keep-alive\r\n"
-    msg += b"Location: search_results.html\r\n\r\n"
+    msg += b"Location: " + file_loc + b"\r\n\r\n"
 
     return msg

@@ -22,7 +22,7 @@ def verifyPassword(username, password):
     try:
         correctPass = correctPass[0][0]
     except: # If out of bounds error, then username doesn't exist
-        return
+        return False
 
     # Retrieve salt
     salt = runSQL.runSQL("SELECT Salt FROM Users WHERE Username = '" + username + "'")
@@ -37,6 +37,7 @@ def verifyPassword(username, password):
     # If the values are the same
     if correctPass == hashed:
         return runSQL.runSQL("SELECT UserID FROM Users WHERE Username = '" + username + "'")[0][0]
-        
 
+    # If we get to this point, username and password do not match
+    return False
 

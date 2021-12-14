@@ -71,15 +71,35 @@ def runHTTPServer():
                         fileIO.createSearchFile(sql_result, fileIO.PROJECT_LOCATION + "assets\\search_results.html")
 
                         # Build and send response
-                        conn.sendall(HTTPResponse.postResponse())
+                        conn.sendall(HTTPResponse.postResponse(b'search_results.html'))
 
                     # Sign in user
                     elif requestType == b'SIGNIN':
+                        # Find the body of the data
+                        data = data[data.find(b'\r\n\r\n')+4:]
 
-                                                
+                        # Get from start to bar, store as string
+                        username = data[0:data.find(b'|')].decode('utf-8')
 
-                        print("Nice it worked")
-                        # Sign user in here
+                        # Get from bar (don't include) to end, this is password
+                        password = data[data.find(b'|')+1:]
+
+                        # Get userid of user associated with username, password
+                        userID = passwordManagement.verifyPassword(username, password)
+
+                        if userID: # if not false
+                            # Create profile page
+                            fileIO.createUserFile(userID, fileIO.PROJECT_LOCATION + "assets\\profile.html")
+
+                            # Create a generic post response
+                            response = HTTPResponse.postResponse(b'profile.html')
+
+                            # Remove last two characters
+                            response = response[0:len(response)-2]
+                            # Add cookie
+                            response += "Set-Cookie: userID=" + userID + "/r/n/r/n"
+
+                            conn.sendall(response)
                
                     else:   # Not a GET or POST request, therefor not supported
                         #Build the error message and send

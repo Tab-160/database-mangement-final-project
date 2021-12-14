@@ -1,0 +1,20 @@
+outline your project and what you made
+    Connect
+    Search (index.js)
+    sign-in(custom http request)
+    
+highlight the algorithmic points of your program
+include a demonstration of project running
+This could be captured (screen shots, video) or live demo
+
+
+identify future work on the project
+    add headers
+    Get cart and previous interactions working
+    create account
+    
+reflection on the lessons learned developing code
+    Learned about giving up
+        websocket not working, turning to xmlhttp
+    switching between binary and regular strings
+    proper responses with HTTP
