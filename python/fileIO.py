@@ -11,6 +11,7 @@
 import socket
 
 import HTTPServer
+import runSQL
 
 # Location of this project
 # Example: "C:\\Users\\rgreenup24\\Desktop\\finalProjectDatabase\\"
@@ -118,13 +119,17 @@ def createUserFile(userID, file_loc):
   <body>
     <a href="index.html">Home</a>
     <a href="search.html">Search for a product</a>
-    <a href=sign-in.html align=right>Sign-In</a>
-    <h2>Search Results</h2>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Unit Volume</th>
-        </tr>
+    <a href=sign-in.html align=right id='user'>Sign-In</a>
+    
 """
         f.write(head)
+
+        username = runSQL.runSQL("SELECT Username FROM Users WHERE userID = '" + userID + "'")[0][0]
+
+        f.write("<p>Your username is: " + username + "</p>")
+
+        # Finished with data, add footer
+        foot = """    </table>
+  </body>
+</html>"""
+        f.write(foot)

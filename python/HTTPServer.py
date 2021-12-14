@@ -40,6 +40,13 @@ def runHTTPServer():
                     if not data:   # If there is no data, skip till there is
                         continue
 
+                    # Check if there is a userID cookie
+                    cookie_loc = data.find(b'Cookie: userID=')
+                    cookie = b''
+                    # If there is, grab the value
+                    if cookie_loc > -1:
+                        cookie = data[cookie_loc + 15:data.find(b'/r/n')]
+
                     # Checks HTTP version
                     version_index = data.find(b'HTTP')
                     # If version is not 1.1, send error and get next data                    
@@ -55,9 +62,14 @@ def runHTTPServer():
                     if requestType == b'GET':
                         # Get the location of the file
                         file_loc = fileIO.getFileLoc(data).decode('utf-8')
+
+                        # If the user wants to see profile, then create it
+                        if file_loc == "profile.html":
+                            fileIO.createUserFile(cookie, "profile.html")
+                        
                         # All files are in the assets folder
                         file_loc = fileIO.PROJECT_LOCATION + "assets" + file_loc
-
+                      
                         #Send file
                         conn.sendall(HTTPResponse.sendFile(file_loc))
 
@@ -82,7 +94,7 @@ def runHTTPServer():
                         username = data[0:data.find(b'|')].decode('utf-8')
 
                         # Get from bar (don't include) to end, this is password
-                        password = data[data.find(b'|')+1:]
+                        password = data[data.find(b'|')+1:].decode('utf-8')
 
                         # Get userid of user associated with username, password
                         userID = passwordManagement.verifyPassword(username, password)
@@ -97,8 +109,8 @@ def runHTTPServer():
                             # Remove last two characters
                             response = response[0:len(response)-2]
                             # Add cookie
-                            response += "Set-Cookie: userID=" + userID + "/r/n/r/n"
-
+                            response += b"Set-Cookie: userID=" + userID.encode('utf-8') + b"/r/n/r/n"
+                            
                             conn.sendall(response)
                
                     else:   # Not a GET or POST request, therefor not supported
