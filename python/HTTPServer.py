@@ -9,6 +9,8 @@ import time
 
 import runSQL
 import fileIO
+import passwordManagement
+import HTTPResponse
 
 HOST = "127.0.0.1"  # localhost
 PORT = 50001        # Port to listen on
@@ -42,29 +44,25 @@ def runHTTPServer():
                     version_index = data.find(b'HTTP')
                     # If version is not 1.1, send error and get next data                    
                     if data[version_index:version_index+7] != b'HTTP/1.':
-                        # Build error message
-                        msg = b'HTTP/1.1 505 Version Not Supported\r\n'
-                        msg += b'Content-Length: 62\r\n\r\n' # Final header
-                        msg += b'As of 2021-11-29, this server only works with HTTP version 1.x'
-
-                        conn.sendall(msg)   # Send error to client
-                    
+                        # Build error message and send
+                        conn.sendall(HTTPResponse.error505())
+                        
                         continue # Skip to next data sent by client
                     
+                    # Check what type of request it is
+                    requestType = data[0:data.find(b' ')]
                     # If the request is a get request, send the associated file
-                    if data[0:data.find(b' ')] == b'GET':
+                    if requestType == b'GET':
                         # Get the location of the file
                         file_loc = fileIO.getFileLoc(data).decode('utf-8')
                         # All files are in the assets folder
                         file_loc = fileIO.PROJECT_LOCATION + "assets" + file_loc
 
                         #Send file
-                        fileIO.sendFile(conn, file_loc)
-
-                        continue    # Skip to next data sent by client
+                        conn.sendall(HTTPResponse.sendFile(file_loc))
 
                     # If there is a post request, then it is search
-                    elif data[0:data.find(b' ')] == b'POST':
+                    elif requestType == b'POST':
                         # Find the body of the data
                         data = data[data.find(b'\r\n\r\n')+4:]
                         # Run SQL
@@ -73,25 +71,19 @@ def runHTTPServer():
                         fileIO.createFile(sql_result, fileIO.PROJECT_LOCATION + "assets\\search_results.html")
 
                         # Build and send response
-                        msg = b"HTTP/1.1 303 See Other\r\n"
-                        msg += b"Connection: keep-alive\r\n"
-                        msg += b"Location: search_results.html\r\n\r\n"
-
-                        conn.sendall(msg)
+                        conn.sendall(HTTPResponse.postResponse())
 
                     # Sign in user
-                    elif data[0:data.find(b' ')] == b'SIGNIN':
+                    elif requestType == b'SIGNIN':
+
+                        
 
                         print("Nice it worked")
                         # Sign user in here
                
                     else:   # Not a GET or POST request, therefor not supported
-                        #Build the error message
-                        msg = b'HTTP/1.1 501 Not Implemented\r\n'
-                        msg += b'Content-Length: 63\r\n\r\n' # Final header
-                        msg += b'As of 2021-12-09, server does not yet support non-GET or POST requests.'
-
-                        conn.sendall(msg)   # Send error
+                        #Build the error message and send
+                        conn.sendall(HTTPResponse.error501())
 
 if __name__ == '__main__':
     # Start the server, and every 5 seconds restart it
