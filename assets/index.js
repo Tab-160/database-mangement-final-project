@@ -61,7 +61,45 @@ function gotosearch(){
 
 // Tells the server the username and password
 function signIn(){
+    console.log("inside search");
+	
+	// Get what the user wants to search for
+    var username = document.getElementById('logon_input_username').value;
+	
+	// Find radio button value
+    var password = document.getElementsByName('logon_input_password');
+
+	// Sets up SQL request
+	var sql = "SELECT name, category, unit_vol FROM products WHERE ";
+	
+	// If the second button is selected, then search over category
+	if(search_type[1].checked){
+		sql += "category";
+	} else {	// Otherwise, search over name
+		sql += "name";
+	}
+	
+	// Finish SQL
+	sql += " LIKE '%" + search_term + "%'"
     
+    // For each character, remove any semicolens
+    // Repeats a number of times of characters in string, works for string of only semicolens
+    for(let i = 0; i < sql.length; i++){
+        sql.replace(';', '');
+    }
+	
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "SIGNIN", '127.0.0.1:50001/page' ); // false for synchronous request
+    
+    console.log(xmlHttp.readyState);
+    
+    while(true){
+        if (xmlHttp.readyState==1) {
+    // do stuff here
+            xmlHttp.send( sql );
+            break;
+        }
+    }
 }
 
 
