@@ -74,6 +74,7 @@ def createSearchFile(sql_response, file_loc):
             <th>Name</th>
             <th>Category</th>
             <th>Unit Volume</th>
+            <th>Food Bank Name</th>
         </tr>
 """
         f.write(head)

@@ -24,19 +24,20 @@ try:
     count = count[0][0]
 except: #see if there exists a 
     return False
+print ("returning:" +str(count))
+return count
 
 def getInventory(prodID, bankID):
     currInv = runSQL.runSQL("SELECT I.Quantity"+
         "\nFROM Inventory as I"+
         "\nWhere I.prodID = "+prodID+" and I.bankID = "+bankID+";")
-    return 
+print ("returning:" +str(currInv))
+return currInv
 
-
-return count
 
 def modInventory(prodID, bankID):
     #check if row exists with this number
-    getInventory
+    inv = getInventory(prodID, bankID)
     
     runSQL.runSQL("UPDATE Inventory"+
     "SET Quantity="+countTransactions(prodID,bankID)+""+
