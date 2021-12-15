@@ -28,7 +28,7 @@ try:
 except: #see if there exists a 
     return False
 
-getInventory(prodID, bankID):
+def getInventory(prodID, bankID):
     currInv = runSQL.runSQL("SELECT I.Quantity"+
         "\nFROM Inventory as I"+
         "\nWhere I.prodID = "+prodID+" and I.bankID = "+bankID+";")

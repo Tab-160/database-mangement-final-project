@@ -31,3 +31,21 @@ def runSQL(query):
 
     return data
 
+def popInventory():
+    #delete any previous rows 
+    runSQL("DELETE FROM Inventory;")
+
+    #create crossproduct of prod and bank table
+    numProds = runSQL("SELECT COUNT(P.ID)"
+        +"\nFROM Products as P")
+    numBanks = runSQL("SELECT COUNT(L.ID)"
+        +"\nFROM Locations as L")
+    numLoops = 0
+    for i in range(numBanks):
+        for j in range (numProds):
+            runSQL("INSERT INTO Inventory" + "\nVALUES ("+numLoops+","+i+", "+j+", 0);")
+            #sets each quantity to 0 and each row to 
+            numLoops+=1
+
+
+
