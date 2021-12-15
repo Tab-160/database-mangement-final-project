@@ -75,43 +75,47 @@ def runHTTPServer():
 
                     # If there is a post request, then it is search
                     elif requestType == b'POST':
-                        # Find the body of the data
-                        data = data[data.find(b'\r\n\r\n')+4:]
-                        # Run SQL
-                        sql_result = runSQL.runSQL(data.decode('utf-8'))
-                        # Create search_result.html
-                        fileIO.createSearchFile(sql_result, fileIO.PROJECT_LOCATION + "assets\\search_results.html")
-
-                        # Build and send response
-                        conn.sendall(HTTPResponse.postResponse(b'search_results.html'))
-
-                    # Sign in user
-                    #elif requestType == b'SIGNIN':
+                        file_loc = fileIO.getFileLoc(data).decode('utf-8')
+                        
                         # Find the body of the data
                         data = data[data.find(b'\r\n\r\n')+4:]
 
-                        # Get from start to bar, store as string
-                        username = data[0:data.find(b'|')].decode('utf-8')
+                        # If the post request was for search_results, then run search
+                        if file_loc == "/127.0.0.1:50001/search_results":
+                            # Run SQL
+                            sql_result = runSQL.runSQL(data.decode('utf-8'))
+                            # Create search_result.html
+                            fileIO.createSearchFile(sql_result, fileIO.PROJECT_LOCATION + "assets\\search_results.html")
 
-                        # Get from bar (don't include) to end, this is password
-                        password = data[data.find(b'|')+1:].decode('utf-8')
+                            # Build and send response
+                            conn.sendall(HTTPResponse.postResponse(file_loc.encod('utf-8')))
 
-                        # Get userid of user associated with username, password
-                        userID = passwordManagement.verifyPassword(username, password)
+                        # Sign in user
+                        elif file_loc == "127.0.0.1:50001/page":
+                            # Get from start to bar, store as string
+                            username = data[0:data.find(b'|')].decode('utf-8')
 
-                        if userID: # if not false
-                            # Create profile page
-                            fileIO.createUserFile(userID, fileIO.PROJECT_LOCATION + "assets\\profile.html")
+                            # Get from bar (don't include) to end, this is password
+                            password = data[data.find(b'|')+1:].decode('utf-8')
 
-                            # Create a generic post response
-                            response = HTTPResponse.postResponse(b'profile.html')
+                            # Get userid of user associated with username, password
+                            userID = passwordManagement.verifyPassword(username, password)
 
-                            # Remove last two characters
-                            response = response[0:len(response)-2]
-                            # Add cookie
-                            response += b"Set-Cookie: userID=" + userID.encode('utf-8') + b"/r/n/r/n"
+                            if userID: # if not false
+                                # Create profile page
+                                fileIO.createUserFile(userID, fileIO.PROJECT_LOCATION + "assets\\profile.html")
+
+                                # Create a generic post response
+                                response = HTTPResponse.postResponse(b'profile.html')
+
+                                # Remove last two characters
+                                response = response[0:len(response)-2]
+                                # Add cookie
+                                response += b"Set-Cookie: userID=" + userID.encode('utf-8') + b"/r/n/r/n"
                             
-                            conn.sendall(response)
+                                conn.sendall(response)
+
+                            
                
                     else:   # Not a GET or POST request, therefor not supported
                         #Build the error message and send

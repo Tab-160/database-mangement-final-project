@@ -13,8 +13,6 @@ This file will be implementing the Client side of this interaction
 */
 
 function search(){
-    
-    console.log("inside search");
 	
 	// Get what the user wants to search for
     var search_term = document.getElementById('search_input_search').value;
@@ -23,48 +21,47 @@ function search(){
     var search_type = document.getElementsByName('type');
 
 	// Sets up SQL request
-	var sql = "SELECT P.name, P.category, P.unit_vol, L.Name FROM products as P, Locations as L WHERE ";
+	var sql = "SELECT name, category, unit_vol FROM products WHERE ";
 	
 	// If the second button is selected, then search over category
 	if(search_type[1].checked){
-		sql += "P.category";
+		sql += "category";
 	} else {	// Otherwise, search over name
-		sql += "P.name";
+		sql += "name";
 	}
 	
 	// Finish SQL
 	sql += " LIKE '%" + search_term + "%'"
 	
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "POST", '127.0.0.1:50001/search_results' ); // false for synchronous request
-    
-    // For each character, remove any semicolens
+	// For each character, remove any semicolens
     // Repeats a number of times of characters in string, works for string of only semicolens
     for(let i = 0; i < sql.length; i++){
         sql.replace(';', '');
     }
+	
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "POST", '127.0.0.1:50001/search_results' ); // setup request
     
+	// Wait until readystate = 1
     while(true){
         if (xmlHttp.readyState==1) {
-    // do stuff here
+			// Then send sql over
             xmlHttp.send( sql );
             break;
         }
     }
     
     
-    setTimeout(gotosearch, 6000);
+    setTimeout(gotopage, 5000, 'search-results.html');
 }
 
-// Redirects page to search_results.html
-function gotosearch(){
-    window.location.href = 'search_results.html';
+// Redirects page to redirect
+function gotopage(redirect){
+    window.location.href = redirect;
 }
 
 // Tells the server the username and password
-function signIn(){
-    console.log("inside signIn");
-	
+function signIn(){	
 	// Get what the user wants to search for
     var username = document.getElementById('logon_input_username').value;
 	
@@ -80,17 +77,18 @@ function signIn(){
     }
 	
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "SIGNIN", '127.0.0.1:50001/page' ); // false for synchronous request
+    xmlHttp.open( "POST", '127.0.0.1:50001/page' ); // Setup request
     
-    console.log(xmlHttp.readyState);
-    
+    // Wait until readystate = 1
     while(true){
         if (xmlHttp.readyState==1) {
-    // do stuff here
+			// Then send content over
             xmlHttp.send( content );
             break;
         }
     }
+	
+    setTimeout(gotopage, 5000, 'page.html');
 }
 
 
