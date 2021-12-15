@@ -38,7 +38,7 @@ def getFileLoc(request):
         file_loc = file_loc[len(HTTPServer.DOMAIN)+1:]
     
     if(file_loc == b'/'):    # If /, then index is wanted
-        file_loc += "index.html"
+        file_loc += b"index.html"
     
     # If there is an illegal char, ignore everything after
     if(file_loc.find(b'?') > 0):
