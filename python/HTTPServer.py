@@ -69,7 +69,9 @@ def runHTTPServer():
                         
                         # All files are in the assets folder
                         file_loc = fileIO.PROJECT_LOCATION + "assets" + file_loc
-                      
+
+                        print(file_loc)
+                        
                         #Send file
                         conn.sendall(HTTPResponse.sendFile(file_loc))
 
