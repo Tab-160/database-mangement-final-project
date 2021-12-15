@@ -38,7 +38,7 @@ def runHTTPServer():
                     print ("Data:", data)
 
                     if not data:   # If there is no data, skip till there is
-                        continue
+                        break
 
                     # Check if there is a userID cookie
                     cookie_loc = data.find(b'Cookie: userID=')
