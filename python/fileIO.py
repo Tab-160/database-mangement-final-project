@@ -67,7 +67,7 @@ def createSearchFile(sql_response, file_loc):
   <body>
     <a href="index.html">Home</a>
     <a href="search.html">Search for a product</a>
-    <a href=sign-in.html align=right id='user'>Sign-In</a>
+    <a href=sign-in.html style="float:right;" id='user'>Sign-In</a>
     <h2>Search Results</h2>
     <table>
         <tr>
@@ -119,7 +119,7 @@ def createUserFile(userID, file_loc):
   <body>
     <a href="index.html">Home</a>
     <a href="search.html">Search for a product</a>
-    <a href=sign-in.html align=right id='user'>Sign-In</a>
+    <a href=sign-in.html style="float:right;" id='user'>Sign-In</a>
     
 """
         f.write(head)
@@ -129,7 +129,6 @@ def createUserFile(userID, file_loc):
         f.write("<p>Your username is: " + username + "</p>")
 
         # Finished with data, add footer
-        foot = """    </table>
-  </body>
+        foot = """  </body>
 </html>"""
         f.write(foot)
