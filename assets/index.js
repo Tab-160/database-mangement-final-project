@@ -23,13 +23,13 @@ function search(){
     var search_type = document.getElementsByName('type');
 
 	// Sets up SQL request
-	var sql = "SELECT name, category, unit_vol FROM products WHERE ";
+	var sql = "SELECT P.name, P.category, P.unit_vol, L.Name FROM products as P, Locations as L WHERE ";
 	
 	// If the second button is selected, then search over category
 	if(search_type[1].checked){
-		sql += "category";
+		sql += "P.category";
 	} else {	// Otherwise, search over name
-		sql += "name";
+		sql += "P.name";
 	}
 	
 	// Finish SQL
