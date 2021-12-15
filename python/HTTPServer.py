@@ -12,7 +12,7 @@ import fileIO
 import passwordManagement
 import HTTPResponse
 
-HOST = "10.200.100.92"  # localhost
+HOST = "10.200.100.96"  # localhost
 PORT = 50001        # Port to listen on
 DOMAIN = HOST + ":" + str(PORT)
 
@@ -35,7 +35,7 @@ def runHTTPServer():
                     print("waiting for data...")
                     # Recives and prints data from client
                     data = conn.recv(4096)
-                    #print ("Data:", data)
+                    print ("Data:", data)
 
                     if not data:   # If there is no data, skip till there is
                         continue
