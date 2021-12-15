@@ -26,9 +26,16 @@ def runSQL(query):
     data = []   # Store data as an array
     # Run SQL, store in data
     rows = crsr.execute(query)
-    for row in rows:
-        data.append((row))
 
+    # Check what type of query it is
+    queryType = query[0:query.find(" ")]
+
+    if queryType == "SELECT":
+        for row in rows:
+            data.append((row))
+
+    conn.commit()   # posting data to file
+    
     return data
 
 def popInventory():
@@ -36,14 +43,14 @@ def popInventory():
     runSQL("DELETE FROM Inventory;")
 
     #create crossproduct of prod and bank table
-    numProds = runSQL("SELECT COUNT(P.ID)"
-        +"\nFROM Products as P")
-    numBanks = runSQL("SELECT COUNT(L.ID)"
-        +"\nFROM Locations as L")
+    prods = runSQL("SELECT ID FROM Products")
+    banks = runSQL("SELECT ID FROM Locations")
     numLoops = 0
-    for i in range(numBanks):
-        for j in range (numProds):
-            runSQL("INSERT INTO Inventory" + "\nVALUES ("+numLoops+","+i+", "+j+", 0);")
+    for i in banks:
+        for j in prods:
+            query = "INSERT INTO Inventory VALUES ("+str(numLoops)+","+str(i[0])+", "+str(j[0])+", 0);"
+            print(query)
+            runSQL(query)
             #sets each quantity to 0 and each row to 
             numLoops+=1
 
