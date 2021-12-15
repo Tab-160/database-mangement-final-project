@@ -14,7 +14,7 @@ import HTTPResponse
 
 HOST = "127.0.0.1"  # localhost
 PORT = 50001        # Port to listen on
-DOMAIN = "127.0.0.1:50001"
+DOMAIN = HOST + ":" + str(PORT)
 
 def runHTTPServer():
     """Starts and continues operation of HTTP server"""
