@@ -35,7 +35,7 @@ def runHTTPServer():
                     print("waiting for data...")
                     # Recives and prints data from client
                     data = conn.recv(4096)
-                    #print ("Data:", data)
+                    print ("Data:", data)
 
                     if not data:   # If there is no data, skip till there is
                         continue
