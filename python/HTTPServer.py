@@ -86,7 +86,7 @@ def runHTTPServer():
                         conn.sendall(HTTPResponse.postResponse(b'search_results.html'))
 
                     # Sign in user
-                    elif requestType == b'SIGNIN':
+                    #elif requestType == b'SIGNIN':
                         # Find the body of the data
                         data = data[data.find(b'\r\n\r\n')+4:]
 

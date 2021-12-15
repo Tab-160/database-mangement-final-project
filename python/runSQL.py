@@ -27,15 +27,13 @@ def runSQL(query):
     # Run SQL, store in data
     rows = crsr.execute(query)
 
-    # Check what type of query it is
     queryType = query[0:query.find(" ")]
-
     if queryType == "SELECT":
         for row in rows:
             data.append((row))
 
-    conn.commit()   # posting data to file
-    
+    conn.commit()
+
     return data
 
 def popInventory():
@@ -48,11 +46,8 @@ def popInventory():
     numLoops = 0
     for i in banks:
         for j in prods:
-            query = "INSERT INTO Inventory VALUES ("+str(numLoops)+","+str(i[0])+", "+str(j[0])+", 0);"
-            print(query)
-            runSQL(query)
+            runSQL("INSERT INTO Inventory VALUES ("+str(numLoops)+","+str(i[0])+", "+str(j[0])+", 0);")
             #sets each quantity to 0 and each row to 
             numLoops+=1
-
 
 
