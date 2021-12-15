@@ -15,7 +15,7 @@ import runSQL
 
 # Location of this project
 # Example: "C:\\Users\\rgreenup24\\Desktop\\finalProjectDatabase\\"
-PROJECT_LOCATION = "C:\\Users\\rgreenup24\\Desktop\\databaseFinal\\"
+PROJECT_LOCATION = "D:\\database-mangement-final-project\\"
 
 
 def getFileLoc(request):
@@ -31,7 +31,7 @@ def getFileLoc(request):
     # Because this is a GET request
     # We know the file location begins at index 4
     # Goes until the space before "HTTP"
-    file_loc = request[4:version_index-1]
+    file_loc = request[request.find(b' ') + 1:version_index-1]
 
     # If the server included the domain, ignore it
     while(file_loc.find(HTTPServer.DOMAIN.encode('utf-8')) > 0):

@@ -40,7 +40,7 @@ function search(){
     }
 	
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "POST", '127.0.0.1:50001/search_results' ); // setup request
+    xmlHttp.open( "POST", '/search_results' ); // setup request
     
 	// Wait until readystate = 1
     while(true){
@@ -77,7 +77,7 @@ function signIn(){
     }
 	
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "POST", '127.0.0.1:50001/page' ); // Setup request
+    xmlHttp.open( "POST", '/page' ); // Setup request
     
     // Wait until readystate = 1
     while(true){
