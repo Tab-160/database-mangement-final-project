@@ -9,6 +9,8 @@
             create crossproduct of prod and bank table
                 INSERT INTO Inventory
                 VALUES (id, bank, prod, 0);
+
+        getTransactions(userID)
         
         
         
@@ -46,3 +48,6 @@ def modInventory(prodID, bankID):
 
 def createInventory():
     runSQL.popInventory()
+
+def getTransactions(userID):
+    runSQL.runSQL("SELECT L.Name, P.Name,T.Quantity,T.Trans_Type, T.Trans_Date FROM Transaction as T, Products as P, Locations as L WHERE T.ProdID = P.ID and T.LocID = L.ID and T.UserID ="+str(userID)+";")
