@@ -88,7 +88,7 @@ function signIn(){
         }
     }
 	
-    //setTimeout(gotopage, 5000, 'page.html');
+    setTimeout(gotopage, 15000, 'page.html');
 }
 
 

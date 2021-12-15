@@ -35,7 +35,7 @@ def runHTTPServer():
                     print("waiting for data...")
                     # Recives and prints data from client
                     data = conn.recv(4096)
-                    print ("Data:", data)
+                    #print ("Data:", data)
 
                     if not data:   # If there is no data, skip till there is
                         continue
@@ -75,23 +75,27 @@ def runHTTPServer():
 
                     # If there is a post request, then it is search
                     elif requestType == b'POST':
+                        print("Post")
+                        
                         file_loc = fileIO.getFileLoc(data).decode('utf-8')
+                        print(file_loc)
                         
                         # Find the body of the data
                         data = data[data.find(b'\r\n\r\n')+4:]
 
                         # If the post request was for search_results, then run search
-                        if file_loc == "/127.0.0.1:50001/search_results":
+                        if file_loc == "/search_results":
                             # Run SQL
                             sql_result = runSQL.runSQL(data.decode('utf-8'))
                             # Create search_result.html
                             fileIO.createSearchFile(sql_result, fileIO.PROJECT_LOCATION + "assets\\search_results.html")
 
                             # Build and send response
-                            conn.sendall(HTTPResponse.postResponse(file_loc.encod('utf-8')))
+                            conn.sendall(HTTPResponse.postResponse(file_loc.encode('utf-8')))
 
                         # Sign in user
-                        elif file_loc == "127.0.0.1:50001/page":
+                        elif file_loc == "/page":
+                            print("Page")
                             # Get from start to bar, store as string
                             username = data[0:data.find(b'|')].decode('utf-8')
 
@@ -102,6 +106,7 @@ def runHTTPServer():
                             userID = passwordManagement.verifyPassword(username, password)
 
                             if userID: # if not false
+                                print("userID")
                                 # Create profile page
                                 fileIO.createUserFile(userID, fileIO.PROJECT_LOCATION + "assets\\profile.html")
 
@@ -112,8 +117,13 @@ def runHTTPServer():
                                 response = response[0:len(response)-2]
                                 # Add cookie
                                 response += b"Set-Cookie: userID=" + userID.encode('utf-8') + b"/r/n/r/n"
-                            
-                                conn.sendall(response)
+
+                                print(response, len(response))
+                                # Make sure that all is sent
+                                amountSent = 0
+                                while amountSent < len(response):
+                                    amountSent = conn.send(response)
+                                    print(amountSent)
 
                             
                

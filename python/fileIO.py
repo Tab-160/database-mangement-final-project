@@ -35,7 +35,7 @@ def getFileLoc(request):
 
     # If the server included the domain, ignore it
     while(file_loc.find(HTTPServer.DOMAIN.encode('utf-8')) > 0):
-        file_loc = file_loc[len(HTTPServer.DOMAIN)+1:]
+        file_loc = file_loc[len(HTTPServer.DOMAIN)+2:]
     
     if(file_loc == b'/'):    # If /, then index is wanted
         file_loc += b"index.html"
@@ -45,21 +45,9 @@ def getFileLoc(request):
         file_loc = file_loc[0:file_loc.find(b'?')]
 
     return(file_loc)
-
-
+    
 
 def createSearchFile(sql_response, file_loc):
-    header = """<th>Name</th>
-            <th>Category</th>
-            <th>Unit Volume</th>
-            <th>Food Bank Name</th>"""
-    footer = """    </table>
-            </body>
-            </html>"""
-    createBaseSearchFile(sql_response, file_loc, header, footer)
-
-
-def createBaseSearchFile(sql_response, file_loc, header, footer):
     """ Creates a HTML file at file_loc that
         displays the data in sql_response nicely
 
@@ -83,9 +71,9 @@ def createBaseSearchFile(sql_response, file_loc, header, footer):
     <h2>Search Results</h2>
     <table>
         <tr>
-        """
-        head += header
-        head += """
+            <th>Name</th>
+            <th>Category</th>
+            <th>Unit Volume</th>
         </tr>
 """
         f.write(head)
@@ -104,8 +92,10 @@ def createBaseSearchFile(sql_response, file_loc, header, footer):
             f.write(row)
 
         # Finished with data, add footer
-        
-        f.write(footer)
+        foot = """    </table>
+  </body>
+</html>"""
+        f.write(foot)
 
         #done
 
