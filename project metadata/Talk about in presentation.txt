@@ -9,6 +9,7 @@ This could be captured (screen shots, video) or live demo
 
 
 identify future work on the project
+    change sign-in link to profile link if signed in
     add headers
     Get cart and previous interactions working
     create account
