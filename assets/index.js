@@ -77,7 +77,7 @@ function signIn(){
     }
 	
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "POST", '/page' ); // Setup request
+    xmlHttp.open( "POST", '/profile' ); // Setup request
     
     // Wait until readystate = 1
     while(true){
@@ -88,7 +88,7 @@ function signIn(){
         }
     }
 	document.cookie = "username=" + username
-    setTimeout(gotopage, 15000, 'page.html');
+    setTimeout(gotopage, 15000, 'profile.html');
 }
 
 
