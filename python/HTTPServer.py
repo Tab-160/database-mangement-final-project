@@ -12,7 +12,7 @@ import fileIO
 import passwordManagement
 import HTTPResponse
 
-HOST = "127.0.0.1"  # localhost
+HOST = "10.200.100.96"  # localhost
 PORT = 50001        # Port to listen on
 DOMAIN = HOST + ":" + str(PORT)
 
@@ -69,29 +69,35 @@ def runHTTPServer():
                         
                         # All files are in the assets folder
                         file_loc = fileIO.PROJECT_LOCATION + "assets" + file_loc
-                      
+
+                        print(file_loc)
+                        
                         #Send file
                         conn.sendall(HTTPResponse.sendFile(file_loc))
 
                     # If there is a post request, then it is search
                     elif requestType == b'POST':
+                        print("Post")
+                        
                         file_loc = fileIO.getFileLoc(data).decode('utf-8')
+                        print(file_loc)
                         
                         # Find the body of the data
                         data = data[data.find(b'\r\n\r\n')+4:]
 
                         # If the post request was for search_results, then run search
-                        if file_loc == "/127.0.0.1:50001/search_results":
+                        if file_loc == "/search_results":
                             # Run SQL
                             sql_result = runSQL.runSQL(data.decode('utf-8'))
                             # Create search_result.html
                             fileIO.createSearchFile(sql_result, fileIO.PROJECT_LOCATION + "assets\\search_results.html")
 
                             # Build and send response
-                            conn.sendall(HTTPResponse.postResponse(file_loc.encod('utf-8')))
+                            conn.sendall(HTTPResponse.postResponse(file_loc.encode('utf-8')))
 
                         # Sign in user
-                        elif file_loc == "127.0.0.1:50001/page":
+                        elif file_loc == "/page":
+                            print("Page")
                             # Get from start to bar, store as string
                             username = data[0:data.find(b'|')].decode('utf-8')
 
@@ -102,6 +108,7 @@ def runHTTPServer():
                             userID = passwordManagement.verifyPassword(username, password)
 
                             if userID: # if not false
+                                print("userID")
                                 # Create profile page
                                 fileIO.createUserFile(userID, fileIO.PROJECT_LOCATION + "assets\\profile.html")
 
@@ -111,9 +118,14 @@ def runHTTPServer():
                                 # Remove last two characters
                                 response = response[0:len(response)-2]
                                 # Add cookie
-                                response += b"Set-Cookie: userID=" + userID.encode('utf-8') + b"/r/n/r/n"
-                            
-                                conn.sendall(response)
+                                response += b"Set-Cookie: userID=" + userID.encode('utf-8') + b"\r\n\r\n"
+
+                                print(response, len(response))
+                                # Make sure that all is sent
+                                amountSent = 0
+                                while amountSent < len(response):
+                                    amountSent = conn.send(response)
+                                    print(amountSent)
 
                             
                
