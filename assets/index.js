@@ -52,18 +52,16 @@ function search(){
     }
     
     
-    setTimeout(gotosearch, 5000);
+    setTimeout(gotopage, 5000, 'search-results.html');
 }
 
 // Redirects page to redirect
-function gotopage(var redirect){
-    window.location.href = 'search_results.html';
+function gotopage(redirect){
+    window.location.href = redirect;
 }
 
 // Tells the server the username and password
-function signIn(){
-    console.log("inside signIn");
-	
+function signIn(){	
 	// Get what the user wants to search for
     var username = document.getElementById('logon_input_username').value;
 	
@@ -84,11 +82,13 @@ function signIn(){
     // Wait until readystate = 1
     while(true){
         if (xmlHttp.readyState==1) {
-			// Then send sql over
-            xmlHttp.send( sql );
+			// Then send content over
+            xmlHttp.send( content );
             break;
         }
     }
+	
+    setTimeout(gotopage, 5000, 'page.html');
 }
 
 
