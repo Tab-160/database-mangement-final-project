@@ -87,7 +87,7 @@ function signIn(){
             break;
         }
     }
-	
+	document.cookie = "username=" + username
     setTimeout(gotopage, 15000, 'page.html');
 }
 
