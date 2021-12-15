@@ -118,7 +118,7 @@ def runHTTPServer():
                                 # Remove last two characters
                                 response = response[0:len(response)-2]
                                 # Add cookie
-                                response += b"Set-Cookie: userID=" + userID.encode('utf-8') + b"/r/n/r/n"
+                                response += b"Set-Cookie: userID=" + userID.encode('utf-8') + b"\r\n\r\n"
 
                                 print(response, len(response))
                                 # Make sure that all is sent
