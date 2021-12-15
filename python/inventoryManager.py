@@ -41,9 +41,7 @@ def modInventory(prodID, bankID):
     #check if row exists with this number
     inv = getInventory(prodID, bankID)
     
-    runSQL.runSQL("UPDATE Inventory"+
-    "SET Quantity="+countTransactions(prodID,bankID)+""+
-    "\nWHERE ProdID="+prodID+" and BankID = "+bankID+";")
+    runSQL.runSQL("UPDATE Inventory SET Quantity="+str(countTransactions(prodID,bankID)[0][0]) WHERE ProdID="+prodID+" and BankID = "+bankID+";")
     
 
 def createInventory():
