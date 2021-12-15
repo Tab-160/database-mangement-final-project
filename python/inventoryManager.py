@@ -18,11 +18,8 @@ import runSQL
 
 def countTransactions(prodID, bankID):
     #Get the count of transactions of the current item at the specified bank
-count = runSQL.runSQL("SELECT Sum(T.Quantity) AS [Sum], T.Trans_Type, T.ProdID, T.LocID" +
-    +"\nFROM Transaction AS T, Inventory AS I\n"
-    +"\nWHERE (((T.ProdID)="+prodID+") AND ((T.LocID)=" +bankID+ "))\n"
-    +"\nGROUP BY T.Trans_Type, T.ProdID, T.LocID;")
-
+count = runSQL.runSQL("SELECT Sum(T.Quantity) AS [Sum], T.Trans_Type, T.ProdID, T.LocID FROM Transaction AS T, Inventory AS I WHERE (((T.ProdID)="+prodID+") AND ((T.LocID)=" +bankID+ "))GROUP BY T.Trans_Type, T.ProdID, T.LocID;")
+print (count)
 try:
     count = count[0][0]
 except: #see if there exists a 
@@ -32,6 +29,7 @@ def getInventory(prodID, bankID):
     currInv = runSQL.runSQL("SELECT I.Quantity"+
         "\nFROM Inventory as I"+
         "\nWhere I.prodID = "+prodID+" and I.bankID = "+bankID+";")
+    return 
 
 
 return count
@@ -44,7 +42,6 @@ def modInventory(prodID, bankID):
     "SET Quantity="+countTransactions(prodID,bankID)+""+
     "\nWHERE ProdID="+prodID+" and BankID = "+bankID+";")
     
-    return true
 
 def createInventory():
     runSQL.popInventory()
