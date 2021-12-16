@@ -102,7 +102,14 @@ def upAllInv():
             #use this to update the current inventory
             runSQL("UPDATE Inventory SET Quantity ="+numQuant+" WHERE ProdId = "+str(j[0])+" AND BankID = "+str(i[0])+";")
 
+def getAllTrans(userID):
+    userName = runSQL("SELECT Username FROM Users WHERE UserID = "+str(userID))
+    print("Searching for " + userName+"'s Transaction History")
+    queryRet = runSQL("SELECT P.Name, L.Name, T.Quantity FROM Transaction as T, Products as P, Locations as L WHERE T.ProdID = P.ID AND T.LocID = L.ID AND T.UserID = "+str(userID))
+
+
 def popTrans():
+
     prods = runSQL("SELECT ID FROM Products")
     banks = runSQL("SELECT ID FROM Locations")
     lastID = runSQL("SELECT MAX(ID) FROM Transaction")[0][0]
