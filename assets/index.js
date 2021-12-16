@@ -52,7 +52,7 @@ function search(){
     }
     
     
-    setTimeout(gotopage, 5000, 'search-results.html');
+    setTimeout(gotopage, 5000, 'search_results.html');
 }
 
 // Redirects page to redirect
