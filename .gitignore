@@ -2,3 +2,4 @@
 assets/search_results.html
 *.pyc
 *.ldb
+python/profile.html

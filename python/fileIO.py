@@ -67,7 +67,7 @@ def createSearchFile(sql_response, file_loc):
   <body>
     <a href="index.html">Home</a>
     <a href="search.html">Search for a product</a>
-    <a href=sign-in.html align=right id='user'>Sign-In</a>
+    <a href=sign-in.html style="float:right;" id='user'>Sign-In</a>
     <h2>Search Results</h2>
     <table>
         <tr>
@@ -119,14 +119,52 @@ def createUserFile(userID, file_loc):
   <body>
     <a href="index.html">Home</a>
     <a href="search.html">Search for a product</a>
-    <a href=sign-in.html align=right id='user'>Sign-In</a>
+    <a href=sign-in.html style="float:right;" id='user'>Sign-In</a>
     
 """
         f.write(head)
 
+        # Get some basic info
         username = runSQL.runSQL("SELECT Username FROM Users WHERE userID = '" + userID + "'")[0][0]
-
-        f.write("<p>Your username is: " + username + "</p>")
+        email = runSQL.runSQL("SELECT Email FROM Users WHERE userID = '" + userID + "'")[0][0]
+        main_bank_name = runSQL.runSQL("SELECT l.name FROM Users u, Locations l WHERE u.MainBank = l.id AND u.userID = '" + userID + "'")[0][0]
+        
+        basic_info = "<p>Username: "
+        basic_info += username
+        basic_info += "</p>\n      <p>Email: "
+        basic_info += email
+        basic_info += "</p>\n      <p>Preferd Location: "
+        basic_info += main_bank_name
+        basic_info += "</p>\n"
+        f.write(basic_info)
+        
+        transactions = runSQL.runSQL("SELECT p.Name, l.Name, t.Quantity, t.Trans_Date, t.Trans_Type FROM Transaction t, Locations l, Products p WHERE t.ProdID = p.ID AND t.LocID = l.ID AND t.UserID = " + userID)
+        
+        table = """    <h2>Search Results</h2>
+    <table>
+        <tr>
+            <th>Product Name</th>
+            <th>Location</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Type of Transaction</th>
+        </tr>"""
+        
+        # Loop though each of the elements in the list
+        for i in transactions:
+            # Opening tag for row
+            row = "      <tr>\n"
+            # Loop through each of the elements in the tuple
+            for j in i:
+                # Add the data as a td element
+                row += "        <td>" + str(j) + "</td>\n"
+            # Reached end of row, close row
+            row += "      </tr>\n"
+            # Write this row into file
+            table += row
+            
+        # Once done, write to file
+        f.write(table)
 
         # Finished with data, add footer
         foot = """    </table>

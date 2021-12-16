@@ -38,15 +38,18 @@ def runHTTPServer():
                     print ("Data:", data)
 
                     if not data:   # If there is no data, skip till there is
-                        continue
+                        break
 
                     # Check if there is a userID cookie
-                    cookie_loc = data.find(b'Cookie: userID=')
+                    cookie_loc = data.find(b'Cookie: username=')
                     cookie = b''
                     # If there is, grab the value
                     if cookie_loc > -1:
-                        cookie = data[cookie_loc + 15:data.find(b'/r/n')]
-
+                        end_line = data[cookie_loc:].find(b'\r\n') + cookie_loc
+                        cookie = data[cookie_loc + 17:end_line]
+                    
+                    print(cookie)
+                
                     # Checks HTTP version
                     version_index = data.find(b'HTTP')
                     # If version is not 1.1, send error and get next data                    
@@ -63,14 +66,14 @@ def runHTTPServer():
                         # Get the location of the file
                         file_loc = fileIO.getFileLoc(data).decode('utf-8')
 
-                        # If the user wants to see profile, then create it
-                        if file_loc == "profile.html":
-                            fileIO.createUserFile(cookie, "profile.html")
-                        
                         # All files are in the assets folder
                         file_loc = fileIO.PROJECT_LOCATION + "assets" + file_loc
 
-                        print(file_loc)
+                        # If the user wants to see profile, then create it
+                        if file_loc == fileIO.PROJECT_LOCATION + "assets/profile.html":
+                            # From the cookie, get userID
+                            user_id = runSQL.runSQL("SELECT UserID FROM Users WHERE Username = '" + cookie.decode() + "'")[0][0]
+                            fileIO.createUserFile(user_id, file_loc)
                         
                         #Send file
                         conn.sendall(HTTPResponse.sendFile(file_loc))
