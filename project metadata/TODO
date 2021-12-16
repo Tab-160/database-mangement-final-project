@@ -2,11 +2,12 @@ Sign in button becomes profile when signed in
 
 Cart/Add to cart button on search
 Add addTransaction
+	Each time one happens, update inventory
 
 Create account
     Random salts/userID
 
 Add more HTTP headers
 
-
+Images of products
 
