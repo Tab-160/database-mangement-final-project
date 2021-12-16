@@ -2,10 +2,26 @@
 
     Currently, this only has runSQL on /assets/finalProject.mdb
     Methods:
-        runSQL(query)
-        popInventory()
-        countTransactions(prodID, bankID)
-        upAllInv()
+        def runSQL(query):
+        
+        def popInventory()
+        def upAllInv()
+        def getProdInv(ProdId)
+        def clearInv()
+        def incrementQuant(prodID, bankID, step)
+        def decrementQuant(prodID, bankID, step)
+        
+        def countTransactions(prodID, bankID)
+        def getAllTrans(userID)
+        def popTrans(numPop)
+        def clearTransPast(invID)
+        def clearTrans()
+        
+        def addTransaction(userID, prodID, bankID, quantity)
+        def addDonation(userID, prodID, bankID, quantity)
+        
+    
+        
 
 """
 
@@ -45,7 +61,7 @@ def popInventory():
     """
 
     #delete any previous rows 
-    runSQL("DELETE FROM Inventory;")
+    clearInv()
 
     #create crossproduct of prod and bank table
     prods = runSQL("SELECT ID FROM Products")
@@ -53,9 +69,64 @@ def popInventory():
     numLoops = 0
     for i in banks:
         for j in prods:
-            runSQL("INSERT INTO Inventory VALUES ("+str(numLoops)+","+str(i[0])+", "+str(j[0])+", 0);")
+            invCount = countTransactions(j[0],i[0])
+            runSQL("INSERT INTO Inventory VALUES ("+str(numLoops)+","+str(i[0])+", "+str(j[0])+", "+str(invCount)+");")
             #sets each quantity to 0 and each row to 
             numLoops+=1
+
+def upAllInv():
+    """
+    Brute Force Runs through all the Transaction history to update the inventory quantity for all inventories
+    """
+    prods = runSQL("SELECT ID FROM Products")
+    banks = runSQL("SELECT ID FROM Locations")
+    #iterate through all combos of prods and locations
+    for i in banks:
+        for j in prods:
+            #get the net inventory of transactions
+            numQuant = str(countTransactions(j[0],i[0]))
+            #use this to update the current inventory
+            runSQL("UPDATE Inventory SET Quantity ="+numQuant+" WHERE ProdId = "+str(j[0])+" AND BankID = "+str(i[0])+";")
+
+
+def getProdInv(ProdId):
+    """
+    Args:
+    ProdId: the id of the product to search the inventories for
+    Returns:
+    query: holds all the quantities and names of each bank for the specified product
+    """
+
+    #"Get the Inventory of [Product] at multiple locations"
+    query = runSQL("SELECT I.Quantity, L.Name, FROM Inventory as I, Locations as L WHERE L.ID = I.BankID AND I.ProdID ="+str(ProdId)+";")
+    return query
+
+
+def clearInv():
+    #"Turn the Inventory into a Blank Slate"
+    runSQL("DELETE FROM Inventory")
+
+
+def incrementQuant(prodID, bankID, step):
+    try:
+        print("in inc")
+        numCurrInv = countTrans(prodID, bankID) + step
+        print("changing quant to "+str(numCurrInv))
+        #"Donate [step] number of [product] to [bank]" -> "Increase the inventory of [product] at [bank] by [step]"
+        runSQL("UPDATE Inventory SET Quantity ="+str(numCurrInv)+" WHERE ProdId = "+str(prodID)+" AND BankID = "+str(bankID)+";")
+    except:
+        return False
+
+
+def decrementQuant(prodID, bankID, step):
+    try:
+        print("in dec")
+        numCurrInv = countTrans(prodID, bankID) - step
+        print("changing quant to "+str(numCurrInv))
+        #"Remove [step] number of [product] from [bank]" -> "Decrease the inventory of [product] at [bank] by [step]"
+        runSQL("UPDATE Inventory SET Quantity ="+str(numCurrInv)+" WHERE ProdId = "+str(prodID)+" AND BankID = "+str(bankID)+";")
+    except:
+        return False
 
 def countTransactions(prodID, bankID):
     """
@@ -88,19 +159,6 @@ def countTransactions(prodID, bankID):
     count -= countTrans
     return count
 
-def upAllInv():
-    """
-    Runs through all the Transaction history to update the inventory quantity for all inventories
-    """
-    prods = runSQL("SELECT ID FROM Products")
-    banks = runSQL("SELECT ID FROM Locations")
-    #iterate through all combos of prods and locations
-    for i in banks:
-        for j in prods:
-            #get the net inventory of transactions
-            numQuant = str(countTransactions(j[0],i[0]))
-            #use this to update the current inventory
-            runSQL("UPDATE Inventory SET Quantity ="+numQuant+" WHERE ProdId = "+str(j[0])+" AND BankID = "+str(i[0])+";")
 
 def getAllTrans(userID):
     """
@@ -109,29 +167,21 @@ def getAllTrans(userID):
     
     Args: userID: the user requesting to se their transaction history
     """
-    queryRet = runSQL("SELECT P.Name, L.Name, T.Quantity, T.Trans_Type FROM Transaction as T, Products as P, Locations as L WHERE T.ProdID = P.ID AND T.LocID = L.ID AND T.UserID = "+str(userID)+";")
-    return queryRet
+    try:
+        queryRet = runSQL("SELECT P.Name, L.Name, T.Quantity, T.Trans_Type FROM Transaction as T, Products as P, Locations as L WHERE T.ProdID = P.ID AND T.LocID = L.ID AND T.UserID = "+str(userID)+";")
+        return queryRet
+    except:
+        return False
 
-
-def getProdInvs(ProdId):
-    """
-    Args:
-    ProdId: the id of the product to search the inventories for
-    Returns:
-    query: holds all the quantities and names of each bank for the specified product
-    """
-
-    query = runSQL("SELECT I.Quantity, L.Name, FROM Inventory as I, Locations as L WHERE L.ID = I.BankID AND I.ProdID ="+str(ProdId)+";")
-    return query
 
 def popTrans(numPop):
     """
     Adds numPop many rows to the Transaction Table
     Args:numPop - the desired number of new rows to make
     """
-    #since the transaction ID is numeric in order, work from the last (highest) ID
-    lastID = runSQL("SELECT MAX(ID) FROM Transaction")[0][0]
+   
     #create bounds to keep the User iterator in
+        #assumes there are no gaps in UserIDs
     lowUserID = runSQL("SELECT MIN(UserID) FROM Users")[0][0]
     highUserID = runSQL("SELECT MAX(UserID) FROM Users")[0][0]
     currUserID = lowUserID
@@ -141,14 +191,12 @@ def popTrans(numPop):
 
     #Create numPop 
     for i in range (numPop):
-        #increment ID for a unique ID
-        lastID += 1
-        #print(str(lastID) +" "+str(currUserID)+" "+ str(bankCyc)+" " + str(prodCyc))
+        #print(str(currUserID)+" "+ str(bankCyc)+" " + str(prodCyc))
         #for pseudorandomness, every 3rd Transaction is a Transaction (not a Donation)
-        if (lastID%3>1):
-            runSQL("INSERT INTO Transaction VALUES ("+str(lastID)+", "+str(currUserID)+", "+str(prodCyc)+", "+str(bankCyc)+", "+str(lastID%bankCyc+prodCyc)+", =Date(), 'Transaction')")
+        if (i%3>1):
+            addTransaction(str(currUserID), (prodCyc), str(bankCyc), str(i%bankCyc+prodCyc))
         else:
-            runSQL("INSERT INTO Transaction VALUES ("+str(lastID)+", "+str(currUserID)+", "+str(prodCyc)+", "+str(bankCyc)+", "+str(lastID%prodCyc+bankCyc)+", =Date(), 'Donation')")
+            addDonation(str(currUserID), (prodCyc), str(bankCyc), str(i%prodCyc+bankCyc))
 
         #increment other values
         bankCyc += 1
@@ -162,11 +210,42 @@ def popTrans(numPop):
         if currUserID > highUserID:
             currUserID = lowUserID
 
-    #Make sure the inventory ajdusts to match the new data
-    upAllInv()
+            
+def clearTransPast(invID):
+    #"Remove all transactions after ID [invID]"
+    runSQL("DELETE FROM Transaction as T WHERE T.ID > "+str(invID))
 
-        
+def clearTrans():
+    #"Blank Slate for the Transaction table"
+    runSQL("DELETE FROM Transaction")
+
+def addTransaction(userID, prodID, bankID, quantity):
+    #"Get the ID of the last transaction"
+    lastID = runSQL("SELECT MAX(ID) FROM Transaction")[0][0]
+    #check in case there are no indexes
+    if lastID == None:
+        lastID = 0
+    try:
+        #"Create a record for this transaction
+        runSQL("INSERT INTO Transaction VALUES ("+str(lastID+1)+", "+str(userID)+", "+str(prodID)+", "+str(bankID)+", "+str(quantity)+", =Date(), 'Transaction')")
+        #"Remove [quantity] number of [product] from [bank]"
+        decrementQuant(prodID, bankID, quantity)
+    except:
+        return False
+
+
+def addDonation(userID, prodID, bankID, quantity):
+    lastID = runSQL("SELECT MAX(ID) FROM Transaction")[0][0]
+    if lastID == None:
+        lastID = 0
     
-        
-    
+    try:
+        #"Create a record for this donation"
+        runSQL("INSERT INTO Transaction VALUES ("+str(lastID+1)+", "+str(userID)+", "+str(prodID)+", "+str(bankID)+", "+str(quantity)+", =Date(), 'Donation')")
+        #"Donate [quantity] number of [product] to [bank]"
+        incrementQuant(prodID, bankID, quantity)
+    except:
+         return False
+
+
 
