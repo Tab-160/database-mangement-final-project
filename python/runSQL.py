@@ -103,33 +103,67 @@ def upAllInv():
             runSQL("UPDATE Inventory SET Quantity ="+numQuant+" WHERE ProdId = "+str(j[0])+" AND BankID = "+str(i[0])+";")
 
 def getAllTrans(userID):
-    userName = runSQL("SELECT Username FROM Users WHERE UserID = "+str(userID))
-    print("Searching for " + userName+"'s Transaction History")
-    queryRet = runSQL("SELECT P.Name, L.Name, T.Quantity FROM Transaction as T, Products as P, Locations as L WHERE T.ProdID = P.ID AND T.LocID = L.ID AND T.UserID = "+str(userID))
+    """
+    retreives the transaction information for every transaction made by the specified user
+    The Product name, the name of the food bank, the quantity exchanged and whether it was a donation or a transaction
+    
+    Args: userID: the user requesting to se their transaction history
+    """
+    queryRet = runSQL("SELECT P.Name, L.Name, T.Quantity, T.Trans_Type FROM Transaction as T, Products as P, Locations as L WHERE T.ProdID = P.ID AND T.LocID = L.ID AND T.UserID = "+str(userID)+";")
+    return queryRet
 
 
-def popTrans():
+def getProdInvs(ProdId):
+    """
+    Args:
+    ProdId: the id of the product to search the inventories for
+    Returns:
+    query: holds all the quantities and names of each bank for the specified product
+    """
 
-    prods = runSQL("SELECT ID FROM Products")
-    banks = runSQL("SELECT ID FROM Locations")
+    query = runSQL("SELECT I.Quantity, L.Name, FROM Inventory as I, Locations as L WHERE L.ID = I.BankID AND I.ProdID ="+str(ProdId)+";")
+    return query
+
+def popTrans(numPop):
+    """
+    Adds numPop many rows to the Transaction Table
+    Args:numPop - the desired number of new rows to make
+    """
+    #since the transaction ID is numeric in order, work from the last (highest) ID
     lastID = runSQL("SELECT MAX(ID) FROM Transaction")[0][0]
-    #iterate through all combos of prods and locations
-    prodCyc = 1
-    bankCyc = 1
-    for i in range (100):
+    #create bounds to keep the User iterator in
+    lowUserID = runSQL("SELECT MIN(UserID) FROM Users")[0][0]
+    highUserID = runSQL("SELECT MAX(UserID) FROM Users")[0][0]
+    currUserID = lowUserID
+
+    prodCyc = (numPop%40) +1
+    bankCyc = (numPop%3) + 1
+
+    #Create numPop 
+    for i in range (numPop):
+        #increment ID for a unique ID
         lastID += 1
-        print(str(lastID) +" "+ str(bankCyc)+" " + str(prodCyc))
-        if (lastID%3>2):
-            runSQL("INSERT INTO Transaction VALUES ("+str(lastID)+", 5, "+str(prodCyc)+", "+str(bankCyc)+", "+str(lastID)+", =Date(), 'Transaction')")
+        #print(str(lastID) +" "+str(currUserID)+" "+ str(bankCyc)+" " + str(prodCyc))
+        #for pseudorandomness, every 3rd Transaction is a Transaction (not a Donation)
+        if (lastID%3>1):
+            runSQL("INSERT INTO Transaction VALUES ("+str(lastID)+", "+str(currUserID)+", "+str(prodCyc)+", "+str(bankCyc)+", "+str(lastID%bankCyc+prodCyc)+", =Date(), 'Transaction')")
         else:
-            runSQL("INSERT INTO Transaction VALUES ("+str(lastID)+", 7, "+str(prodCyc)+", "+str(bankCyc)+", "+str(lastID)+", =Date(), 'Donation')")
+            runSQL("INSERT INTO Transaction VALUES ("+str(lastID)+", "+str(currUserID)+", "+str(prodCyc)+", "+str(bankCyc)+", "+str(lastID%prodCyc+bankCyc)+", =Date(), 'Donation')")
+
+        #increment other values
         bankCyc += 1
         prodCyc += 1
-        if prodCyc > 20:
+        currUserID += 1
+        #adjust for out of bounds errors
+        if prodCyc > 40:
             prodCyc = 1
-            
         if bankCyc > 3: 
             bankCyc = 1
+        if currUserID > highUserID:
+            currUserID = lowUserID
+
+    #Make sure the inventory ajdusts to match the new data
+    upAllInv()
 
         
     
