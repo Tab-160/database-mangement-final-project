@@ -19,3 +19,11 @@ reflection on the lessons learned developing code
         websocket not working, turning to xmlhttp
     switching between binary and regular strings
     proper responses with HTTP
+
+
+
+DATABASE
+Show off search
+Show off sign-in
+Show runSQL.py
+Show index.js
