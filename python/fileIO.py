@@ -140,7 +140,7 @@ def createUserFile(userID, file_loc):
         
         transactions = runSQL.runSQL("SELECT p.Name, l.Name, t.Quantity, t.Trans_Date, t.Trans_Type FROM Transaction t, Locations l, Products p WHERE t.ProdID = p.ID AND t.LocID = l.ID AND t.UserID = " + userID)
         
-        table = """    <h2>Search Results</h2>
+        table = """    <h2>Previous Transactions</h2>
     <table>
         <tr>
             <th>Product Name</th>
