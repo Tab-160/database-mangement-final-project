@@ -100,6 +100,7 @@ def createSearchFile(sql_response, file_loc):
         #done
 
 def createUserFile(userID, file_loc):
+    userID = str(userID)
     """ Creates a HTML file at file_loc that
         displays user info
 
@@ -125,9 +126,9 @@ def createUserFile(userID, file_loc):
         f.write(head)
 
         # Get some basic info
-        username = runSQL.runSQL("SELECT Username FROM Users WHERE userID = '" + userID + "'")[0][0]
-        email = runSQL.runSQL("SELECT Email FROM Users WHERE userID = '" + userID + "'")[0][0]
-        main_bank_name = runSQL.runSQL("SELECT l.name FROM Users u, Locations l WHERE u.MainBank = l.id AND u.userID = '" + userID + "'")[0][0]
+        username = runSQL.runSQL("SELECT Username FROM Users WHERE userID = " + userID)[0][0]
+        email = runSQL.runSQL("SELECT Email FROM Users WHERE userID = " + userID)[0][0]
+        main_bank_name = runSQL.runSQL("SELECT l.name FROM Users u, Locations l WHERE u.MainBank = l.id AND u.userID = " + userID)[0][0]
         
         basic_info = "<p>Username: "
         basic_info += username

@@ -12,7 +12,7 @@ import fileIO
 import passwordManagement
 import HTTPResponse
 
-HOST = "10.200.100.96"  # localhost
+HOST = "127.0.0.1"  # localhost
 PORT = 50001        # Port to listen on
 DOMAIN = HOST + ":" + str(PORT)
 
