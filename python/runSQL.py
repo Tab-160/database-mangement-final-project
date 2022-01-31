@@ -83,25 +83,25 @@ def popInventory():
     numLoops = 0
     for i in banks:
         for j in prods:
-<<<<<<< Updated upstream
+#<<<<<<< Updated upstream
             invCount = countTransactions(j[0],i[0])
             runSQL("INSERT INTO Inventory VALUES ("+str(numLoops)+","+str(i[0])+", "+str(j[0])+", "+str(invCount)+");")
             #sets each quantity to 0 and each row to 
             numLoops+=1
 
-=======
-<<<<<<< Updated upstream
+#=======
+#<<<<<<< Updated upstream
             runSQL("INSERT INTO Inventory VALUES ("+str(numLoops)+","+str(i[0])+", "+str(j[0])+", 0);")
             #sets each quantity to 0 and each row to 
             numLoops+=1
 
-=======
+#=======
             invCount = countTrans(j[0],i[0])
             runSQL("INSERT INTO Inventory VALUES ("+str(numLoops)+","+str(i[0])+", "+str(j[0])+", "+str(invCount)+");")
             #sets each quantity to 0 and each row to 
             numLoops+=1
 
->>>>>>> Stashed changes
+#>>>>>>> Stashed changes
 def upAllInv():
     """
     Brute Force Runs through all the Transaction history to update the inventory quantity for all inventories
@@ -112,11 +112,11 @@ def upAllInv():
     for i in banks:
         for j in prods:
             #get the net inventory of transactions
-<<<<<<< Updated upstream
+#<<<<<<< Updated upstream
             numQuant = str(countTransactions(j[0],i[0]))
-=======
+#=======
             numQuant = str(countTrans(j[0],i[0]))
->>>>>>> Stashed changes
+#>>>>>>> Stashed changes
             #use this to update the current inventory
             runSQL("UPDATE Inventory SET Quantity ="+numQuant+" WHERE ProdId = "+str(j[0])+" AND BankID = "+str(i[0])+";")
 
@@ -141,15 +141,15 @@ def clearInv():
 
 def incrementQuant(prodID, bankID, step):
     try:
-<<<<<<< Updated upstream
+#<<<<<<< Updated upstream
         print("in inc")
         numCurrInv = countTrans(prodID, bankID) + step
-=======
+#=======
         print("in inc- step: "+str(step))
         numCurrInv = countTrans(prodID, bankID)
         print("got "+str(numCurrInv))
         numCurrInv += step
->>>>>>> Stashed changes
+#>>>>>>> Stashed changes
         print("changing quant to "+str(numCurrInv))
         #"Donate [step] number of [product] to [bank]" -> "Increase the inventory of [product] at [bank] by [step]"
         runSQL("UPDATE Inventory SET Quantity ="+str(numCurrInv)+" WHERE ProdId = "+str(prodID)+" AND BankID = "+str(bankID)+";")
@@ -159,26 +159,23 @@ def incrementQuant(prodID, bankID, step):
 
 def decrementQuant(prodID, bankID, step):
     try:
-<<<<<<< Updated upstream
+#<<<<<<< Updated upstream
         print("in dec")
         numCurrInv = countTrans(prodID, bankID) - step
-=======
+#=======
         print("in dec- step: "+str(step))
         numCurrInv = countTrans(prodID, bankID)
         print("got "+str(numCurrInv))
         numCurrInv -= step
->>>>>>> Stashed changes
+#>>>>>>> Stashed changes
         print("changing quant to "+str(numCurrInv))
         #"Remove [step] number of [product] from [bank]" -> "Decrease the inventory of [product] at [bank] by [step]"
         runSQL("UPDATE Inventory SET Quantity ="+str(numCurrInv)+" WHERE ProdId = "+str(prodID)+" AND BankID = "+str(bankID)+";")
     except:
         return False
 
-<<<<<<< Updated upstream
-def countTransactions(prodID, bankID):
-=======
 def countTrans(prodID, bankID):
->>>>>>> Stashed changes
+#>>>>>>> Stashed changes
     """
     Searches through Transactions in finalProject.mdb adding up donations and subtracting all
     transactions to track an accurate inventory for the specified product at the specified location
@@ -189,10 +186,10 @@ def countTrans(prodID, bankID):
     Returns:
         count: the stock of the desired inventory
     """
-<<<<<<< Updated upstream
-=======
+#<<<<<<< Updated upstream
+#=======
     print("1")
->>>>>>> Stashed changes
+#>>>>>>> Stashed changes
     #Get the count of transactions and donations of the current item at the specified bank
     countDon = runSQL("SELECT Sum(T.Quantity) AS [Sum], T.Trans_Type, T.ProdID, T.LocID FROM Transaction AS T WHERE (((T.ProdID)="+str(prodID)+") AND (T.LocID)="+str(bankID)+") AND T.Trans_Type = 'Donation' GROUP BY T.Trans_Type, T.ProdID, T.LocID;")
     countTrans = runSQL("SELECT Sum(T.Quantity) AS [Sum], T.Trans_Type, T.ProdID, T.LocID FROM Transaction AS T WHERE (((T.ProdID)="+str(prodID)+") AND (T.LocID)="+str(bankID)+") AND T.Trans_Type = 'Transaction' GROUP BY T.Trans_Type, T.ProdID, T.LocID;")
@@ -208,17 +205,17 @@ def countTrans(prodID, bankID):
     except: #see if there exists any transaction history
         countTrans = 0
     #calc net inventory with donations increasing quantity and transactions depleting it
-<<<<<<< Updated upstream
+#<<<<<<< Updated upstream
     count = 0
     count += countDon
     count -= countTrans
-=======
+#=======
     print("2")
     count = 0
     count += countDon
     count -= countTrans
     print("returning " + str(count))
->>>>>>> Stashed changes
+#>>>>>>> Stashed changes
     return count
 
 
@@ -309,9 +306,10 @@ def addDonation(userID, prodID, bankID, quantity):
     except:
          return False
 
-
+"""
 <<<<<<< Updated upstream
 =======
 >>>>>>> Stashed changes
 >>>>>>> Stashed changes
 
+"""
