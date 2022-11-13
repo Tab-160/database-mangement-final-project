@@ -1,0 +1,28 @@
+On Run:
+1. Initiate HTTPServer on port 50001
+2. Initiate SocketServer on port 50002
+3. Wait for Client to connect
+
+Client connects:
+1. HTTPServer fuffils all GET requests
+2. SocketServer does nothing
+
+
+User clicks "Search" on search.html
+2. Client sends SQL to be run over Websocket to SocketServer on port 50002
+3. SocketServer recives SQL
+4. SocketServer runs runSQL()
+5. SocketServer creates a HTML page called search-results.html
+6. SocketServer sends Done to Client
+7. Client gets redirected to /assets/search-results.html through HTTPServer
+8. HTTPServer sends search-results.html over to Client
+9. Client sends Done to SocketServer
+10. SocketServer deletes search-results.html
+
+
+
+TODO: 
+step 4+ on search
+Login
+do transaction
+cookies

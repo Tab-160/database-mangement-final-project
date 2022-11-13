@@ -1,27 +1,20 @@
-""" Basic socket programming example of server application
+# Basic socket programming example of server application
 
-    Runs an HTTP/1.1 server. 
-
-"""
 import socket
 import multiprocessing
 import time
-
 import runSQL
 import fileIO
-import passwordManagement
-import HTTPResponse
-
-HOST = "127.0.0.1"  # localhost
-PORT = 50001        # Port to listen on
-DOMAIN = HOST + ":" + str(PORT)
+import config
 
 def runHTTPServer():
     """Starts and continues operation of HTTP server"""
-    while True:
+        
+
+    while(True):
         # Sets code up to use IPv4 and TCP.
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind((HOST, PORT))    # Binds HOST ip to PORT socket
+            s.bind((config.HOST, config.PORT))    # Binds HOST ip to PORT socket
             s.listen()  # Prepares server to hear a connection
 
             s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
@@ -31,119 +24,91 @@ def runHTTPServer():
             conn, addr = s.accept()
 
             with conn:
-                while True:
+                print(addr)
+                while(True):
                     print("waiting for data...")
                     # Recives and prints data from client
                     data = conn.recv(4096)
+
+                    # Turn into regular text
+                    data = data.decode('utf-8')
+                
                     print ("Data:", data)
 
-                    if not data:   # If there is no data, skip till there is
+                    if(not data):
                         break
 
-                    # Check if there is a userID cookie
-                    cookie_loc = data.find(b'Cookie: username=')
-                    cookie = b''
-                    # If there is, grab the value
-                    if cookie_loc > -1:
-                        end_line = data[cookie_loc:].find(b'\r\n') + cookie_loc
-                        cookie = data[cookie_loc + 17:end_line]
-                    
-                    print(cookie)
-                
                     # Checks HTTP version
-                    version_index = data.find(b'HTTP')
-                    # If version is not 1.1, send error and get next data                    
-                    if data[version_index:version_index+7] != b'HTTP/1.':
-                        # Build error message and send
-                        conn.sendall(HTTPResponse.error505())
-                        
+                    version_index = data.find("HTTP")
+                        # If version is not 1.1, send error and get next data                    
+                    if(data[version_index:version_index+7] != "HTTP/1."):
+                        # Build error message
+                        msg = "HTTP/1.1 505 Version Not Supported\r\n"
+                        msg += "Content-Length: 62\r\n\r\n" # Final header
+                        msg += "As of 2021-11-29, this server only works with HTTP version 1.x"
+
+                        conn.sendall(msg.encode('utf-8'))   # Send error to client
+                    
                         continue # Skip to next data sent by client
                     
-                    # Check what type of request it is
-                    requestType = data[0:data.find(b' ')]
-                    # If the request is a get request, send the associated file
-                    if requestType == b'GET':
+                    # If the request is a get request
+                    if(data[0:data.find(" ")] == "GET"):
+                        domain = config.HOST + ":" + str(config.PORT)
                         # Get the location of the file
-                        file_loc = fileIO.getFileLoc(data).decode('utf-8')
-
+                        file_loc = fileIO.getFileLoc(data, domain)
+                        
                         # All files are in the assets folder
-                        file_loc = fileIO.PROJECT_LOCATION + "assets" + file_loc
+                        file_loc = config.PROJECT_LOCATION + "assets\\" + file_loc
 
-                        # If the user wants to see profile, then create it
-                        if file_loc == fileIO.PROJECT_LOCATION + "assets/profile.html":
-                            # From the cookie, get userID
-                            user_id = runSQL.runSQL("SELECT UserID FROM Users WHERE Username = '" + cookie.decode() + "'")[0][0]
-                            fileIO.createUserFile(user_id, file_loc)
                         
                         #Send file
-                        conn.sendall(HTTPResponse.sendFile(file_loc))
+                        fileIO.sendFile(conn, file_loc)
 
-                    # If there is a post request, then it is search
-                    elif requestType == b'POST':
-                        print("Post")
-                        
-                        file_loc = fileIO.getFileLoc(data).decode('utf-8')
-                        print(file_loc)
-                        
+                        continue    # Skip to next data sent by client
+
+                    # If there is a post request, then it is search or sign-in
+                    elif(data[0:data.find(" ")] == "POST"):
                         # Find the body of the data
-                        data = data[data.find(b'\r\n\r\n')+4:]
+                        data = data[data.find("\r\n\r\n")+4:]
+                        # Currently, only search implemented. So, run search
+                        fileIO.createFile(runSQL.runSQL(data), config.PROJECT_LOCATION + "assets\\search_results.html")
 
-                        # If the post request was for search_results, then run search
-                        if file_loc == "/search_results":
-                            # Run SQL
-                            sql_result = runSQL.runSQL(data.decode('utf-8'))
-                            # Create search_result.html
-                            fileIO.createSearchFile(sql_result, fileIO.PROJECT_LOCATION + "assets\\search_results.html")
+                        # Build and send response, assuming search
+                        msg = b"HTTP/1.1 303 See Other\r\n"
+                        #msg += b"Content-Length: 205\r\n"
+                        msg += b"Connection: keep-alive\r\n"
+                        msg += b"Location: search_results.html\r\n\r\n"
 
-                            # Build and send response
-                            conn.sendall(HTTPResponse.postResponse(file_loc.encode('utf-8')))
+                        # Open
+                        #with open("C:\\Users\\rgreenup24\\Desktop\\finalProjectDatabase\\assets\\redirect.html", 'rb') as f:  # Opens and reads file
+                        #    file_contents = f.read()
 
-                        # Sign in user
-                        elif file_loc == "/page":
-                            print("Page")
-                            # Get from start to bar, store as string
-                            username = data[0:data.find(b'|')].decode('utf-8')
+                        #msg += file_contents
 
-                            # Get from bar (don't include) to end, this is password
-                            password = data[data.find(b'|')+1:].decode('utf-8')
-
-                            # Get userid of user associated with username, password
-                            userID = passwordManagement.verifyPassword(username, password)
-
-                            if userID: # if not false
-                                print("userID")
-                                # Create profile page
-                                fileIO.createUserFile(userID, fileIO.PROJECT_LOCATION + "assets\\profile.html")
-
-                                # Create a generic post response
-                                response = HTTPResponse.postResponse(b'profile.html')
-
-                                # Remove last two characters
-                                response = response[0:len(response)-2]
-                                # Add cookie
-                                response += b"Set-Cookie: userID=" + userID.encode('utf-8') + b"\r\n\r\n"
-
-                                print(response, len(response))
-                                # Make sure that all is sent
-                                amountSent = 0
-                                while amountSent < len(response):
-                                    amountSent = conn.send(response)
-                                    print(amountSent)
-
-                            
+                        conn.sendall(msg)
                
                     else:   # Not a GET or POST request, therefor not supported
-                        #Build the error message and send
-                        conn.sendall(HTTPResponse.error501())
+                        #Build the error message
+                        msg = "HTTP/1.1 501 Not Implemented\r\n"
+                        msg += "Content-Length: 63\r\n\r\n" # Final header
+                        msg += "As of 2021-12-09, server does not yet support non-GET or POST requests."
+
+                        conn.sendall(msg.encode('utf-8'))   # Send error to client
 
 if __name__ == '__main__':
-    # Start the server, and every 5 seconds restart it
-    """while(True):
-        server = multiprocessing.Process(target=runHTTPServer)
-        server.start()
-        print("Starting server!")
-        time.sleep(15)
-        print("Closing Server!")
-        server.terminate()"""
+    #while(True):
+    #    server = multiprocessing.Process(target=runHTTPServer)
+    #    server.start()
+    #    print("Starting server!")
+    #    time.sleep(5)
+    #    print("Closing Server!")
+    #    server.terminate()
     runHTTPServer()
 
+
+
+
+
+
+
+        

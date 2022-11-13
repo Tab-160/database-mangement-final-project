@@ -9,4 +9,6 @@ Create account
 Add more HTTP headers
 
 
-
+The Bug: Blocks
+    i.e. HTTP sending expects blocks, need to build file and send as block
+    edit: nevermind. see https://serverfault.com/questions/1078998/is-there-a-maximum-size-for-content-of-an-http-get-for-both-request-and-response
